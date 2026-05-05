@@ -6,63 +6,71 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first"?: string;
-        /**
-          * The last name
-         */
-        "last"?: string;
-        /**
-          * The middle name
-         */
-        "middle"?: string;
+    interface XdsInventoryApp {
+    }
+    interface XdsInventoryEquipmentList {
+    }
+    interface XdsInventoryLocationList {
+    }
+    interface XdsInventoryServiceList {
     }
 }
 declare global {
-    interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
+    interface HTMLXdsInventoryAppElement extends Components.XdsInventoryApp, HTMLStencilElement {
     }
-    var HTMLMyComponentElement: {
-        prototype: HTMLMyComponentElement;
-        new (): HTMLMyComponentElement;
+    var HTMLXdsInventoryAppElement: {
+        prototype: HTMLXdsInventoryAppElement;
+        new (): HTMLXdsInventoryAppElement;
+    };
+    interface HTMLXdsInventoryEquipmentListElement extends Components.XdsInventoryEquipmentList, HTMLStencilElement {
+    }
+    var HTMLXdsInventoryEquipmentListElement: {
+        prototype: HTMLXdsInventoryEquipmentListElement;
+        new (): HTMLXdsInventoryEquipmentListElement;
+    };
+    interface HTMLXdsInventoryLocationListElement extends Components.XdsInventoryLocationList, HTMLStencilElement {
+    }
+    var HTMLXdsInventoryLocationListElement: {
+        prototype: HTMLXdsInventoryLocationListElement;
+        new (): HTMLXdsInventoryLocationListElement;
+    };
+    interface HTMLXdsInventoryServiceListElement extends Components.XdsInventoryServiceList, HTMLStencilElement {
+    }
+    var HTMLXdsInventoryServiceListElement: {
+        prototype: HTMLXdsInventoryServiceListElement;
+        new (): HTMLXdsInventoryServiceListElement;
     };
     interface HTMLElementTagNameMap {
-        "my-component": HTMLMyComponentElement;
+        "xds-inventory-app": HTMLXdsInventoryAppElement;
+        "xds-inventory-equipment-list": HTMLXdsInventoryEquipmentListElement;
+        "xds-inventory-location-list": HTMLXdsInventoryLocationListElement;
+        "xds-inventory-service-list": HTMLXdsInventoryServiceListElement;
     }
 }
 declare namespace LocalJSX {
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first"?: string;
-        /**
-          * The last name
-         */
-        "last"?: string;
-        /**
-          * The middle name
-         */
-        "middle"?: string;
+    interface XdsInventoryApp {
     }
-
-    interface MyComponentAttributes {
-        "first": string;
-        "middle": string;
-        "last": string;
+    interface XdsInventoryEquipmentList {
     }
-
+    interface XdsInventoryLocationList {
+    }
+    interface XdsInventoryServiceList {
+    }
     interface IntrinsicElements {
-        "my-component": Omit<MyComponent, keyof MyComponentAttributes> & { [K in keyof MyComponent & keyof MyComponentAttributes]?: MyComponent[K] } & { [K in keyof MyComponent & keyof MyComponentAttributes as `attr:${K}`]?: MyComponentAttributes[K] } & { [K in keyof MyComponent & keyof MyComponentAttributes as `prop:${K}`]?: MyComponent[K] };
+        "xds-inventory-app": XdsInventoryApp;
+        "xds-inventory-equipment-list": XdsInventoryEquipmentList;
+        "xds-inventory-location-list": XdsInventoryLocationList;
+        "xds-inventory-service-list": XdsInventoryServiceList;
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "my-component": LocalJSX.IntrinsicElements["my-component"] & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
+            "xds-inventory-app": LocalJSX.IntrinsicElements["xds-inventory-app"] & JSXBase.HTMLAttributes<HTMLXdsInventoryAppElement>;
+            "xds-inventory-equipment-list": LocalJSX.IntrinsicElements["xds-inventory-equipment-list"] & JSXBase.HTMLAttributes<HTMLXdsInventoryEquipmentListElement>;
+            "xds-inventory-location-list": LocalJSX.IntrinsicElements["xds-inventory-location-list"] & JSXBase.HTMLAttributes<HTMLXdsInventoryLocationListElement>;
+            "xds-inventory-service-list": LocalJSX.IntrinsicElements["xds-inventory-service-list"] & JSXBase.HTMLAttributes<HTMLXdsInventoryServiceListElement>;
         }
     }
 }

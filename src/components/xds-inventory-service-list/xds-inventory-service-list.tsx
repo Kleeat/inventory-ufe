@@ -1,16 +1,16 @@
 import { Component, Host, h } from '@stencil/core';
 
 @Component({
-  tag: 'xds-inventory-equipment-list',
-  styleUrl: 'xds-inventory-equipment-list.css',
+  tag: 'xds-inventory-service-list',
+  styleUrl: 'xds-inventory-service-list.css',
   shadow: true,
 })
-export class XdsInventoryEquipmentList {
+export class XdsInventoryServiceList {
   render() {
     return (
       <Host>
         <div class="list-header">
-          <h2>Equipment</h2>
+          <h2>Services</h2>
         </div>
         <slot></slot>
       </Host>
