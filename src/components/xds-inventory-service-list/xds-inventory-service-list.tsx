@@ -1,31 +1,33 @@
 import { Component, Host, h, State } from '@stencil/core';
+import '@material/web/list/list';
+import '@material/web/list/list-item';
+import '@material/web/icon/icon';
 
-type ServiceStatus = 'New' | 'Assigned' | 'In Progress' | 'Closed';
+type ServiceStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
+type ServicePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+type SortField = 'priority' | 'createdAt';
 
-interface ServiceRequest {
-  id: string;
-  title: string;
-  description: string;
-  inventoryNumber: string;
-  equipmentName: string;
-  status: ServiceStatus;
-  createdAt: string;
-}
-
-const SERVICE_STATUSES: ServiceStatus[] = ['New', 'Assigned', 'In Progress', 'Closed'];
+const SERVICE_STATUSES: ServiceStatus[] = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
 
 const STATUS_CLASS: Record<ServiceStatus, string> = {
-  'New': 'new',
-  'Assigned': 'assigned',
-  'In Progress': 'in-progress',
-  'Closed': 'closed',
+  'OPEN': 'open',
+  'IN_PROGRESS': 'in-progress',
+  'RESOLVED': 'resolved',
+  'CLOSED': 'closed',
 };
 
-const STATUS_ICONS: Record<ServiceStatus, string> = {
-  'New': 'fiber_new',
-  'Assigned': 'person_add',
-  'In Progress': 'autorenew',
-  'Closed': 'check_circle',
+const PRIORITY_CLASS: Record<ServicePriority, string> = {
+  'LOW': 'low',
+  'MEDIUM': 'medium',
+  'HIGH': 'high',
+  'CRITICAL': 'critical',
+};
+
+const PRIORITY_ORDER: Record<ServicePriority, number> = {
+  'LOW': 0,
+  'MEDIUM': 1,
+  'HIGH': 2,
+  'CRITICAL': 3,
 };
 
 @Component({
@@ -34,80 +36,95 @@ const STATUS_ICONS: Record<ServiceStatus, string> = {
   shadow: true,
 })
 export class XdsInventoryServiceList {
-  @State() statusFilters: ServiceStatus[] = [];
+  serviceRequests: any[] = [];
 
-  private getServiceRequests(): ServiceRequest[] {
-    return [
-      {
-        id: 'SRQ-001',
-        title: 'Battery not holding charge',
-        description: 'The defibrillator AED battery drains within 20 minutes of use. Needs inspection and likely replacement.',
-        inventoryNumber: 'INV-002',
-        equipmentName: 'Defibrillator AED',
-        status: 'In Progress',
-        createdAt: '2026-04-10',
-      },
-      {
-        id: 'SRQ-002',
-        title: 'Suction unit motor failure',
-        description: 'Motor produces a grinding noise and suction pressure is significantly reduced during operation.',
-        inventoryNumber: 'INV-003',
-        equipmentName: 'Suction Unit',
-        status: 'Assigned',
-        createdAt: '2026-04-18',
-      },
-      {
-        id: 'SRQ-003',
-        title: 'Cervical collar size S missing',
-        description: 'Size small cervical collars are missing from the set. Replacement stock needs to be ordered.',
-        inventoryNumber: 'INV-006',
-        equipmentName: 'Cervical Collar Set',
-        status: 'New',
-        createdAt: '2026-04-28',
-      },
-      {
-        id: 'SRQ-004',
-        title: 'Laryngoscope blade cracked',
-        description: 'Number 3 blade has a visible crack along the flange. Unit is out of service pending replacement.',
-        inventoryNumber: 'INV-010',
-        equipmentName: 'Laryngoscope Set',
-        status: 'Assigned',
-        createdAt: '2026-04-22',
-      },
-      {
-        id: 'SRQ-005',
-        title: 'SpO2 sensor intermittent reading',
-        description: 'Pulse oximeter displays erratic SpO2 values on the index finger probe. Verified against secondary device.',
-        inventoryNumber: 'INV-008',
-        equipmentName: 'Pulse Oximeter',
-        status: 'New',
-        createdAt: '2026-05-01',
-      },
-      {
-        id: 'SRQ-006',
-        title: 'IV pump firmware update',
-        description: 'Scheduled firmware update to v3.4.1 to address the drug library sync issue reported in bulletin #44.',
-        inventoryNumber: 'INV-007',
-        equipmentName: 'IV Infusion Pump',
-        status: 'Closed',
-        createdAt: '2026-03-15',
-      },
-      {
-        id: 'SRQ-007',
-        title: 'Stretcher wheel locking mechanism',
-        description: 'Front-left wheel lock does not engage reliably. Temporary fix applied; full repair scheduled.',
-        inventoryNumber: 'INV-009',
-        equipmentName: 'Stretcher',
-        status: 'Closed',
-        createdAt: '2026-03-28',
-      },
-    ];
+  @State() statusFilters: ServiceStatus[] = [];
+  @State() sortBy: SortField | null = null;
+  @State() sortAsc: boolean = true;
+
+  async componentWillLoad() {
+    this.serviceRequests = await this.getServiceRequestsAsync();
   }
 
-  private getFilteredItems(): ServiceRequest[] {
-    const items = this.getServiceRequests();
-    if (this.statusFilters.length === 0) return items;
-    return items.filter(r => this.statusFilters.includes(r.status));
+  private async getServiceRequestsAsync() {
+    return await Promise.resolve([
+      {
+        id: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
+        equipmentId: 'eq-001',
+        title: 'Porucha displeja – nereaguje na dotyk',
+        description: 'Displej prestáva reagovať po 30 minútach prevádzky. Potrebná výmena dotykového panela.',
+        priority: 'HIGH',
+        status: 'IN_PROGRESS',
+        createdAt: '2024-03-15T08:30:00Z',
+      },
+      {
+        id: 'sr-002',
+        equipmentId: 'eq-002',
+        title: 'Batéria sa nenabíja',
+        description: 'Defibrilátor Zoll X Series sa nedá nabiť. Indikátor nabíjania nesvieti pri pripojení na sieť.',
+        priority: 'CRITICAL',
+        status: 'OPEN',
+        createdAt: '2024-04-01T14:00:00Z',
+      },
+      {
+        id: 'sr-003',
+        equipmentId: 'eq-003',
+        title: 'Pravidelná údržba ventilátora',
+        description: 'Plánovaná ročná údržba podľa servisného plánu výrobcu Dräger.',
+        priority: 'MEDIUM',
+        status: 'RESOLVED',
+        createdAt: '2024-02-10T09:00:00Z',
+      },
+      {
+        id: 'sr-004',
+        equipmentId: 'eq-004',
+        title: 'Chybové hlásenie E-04',
+        description: 'Infúzna pumpa zobrazuje chybový kód E-04 pri spustení. Pumpa nie je schopná prevádzky.',
+        priority: 'HIGH',
+        status: 'OPEN',
+        createdAt: '2024-04-10T11:30:00Z',
+      },
+      {
+        id: 'sr-005',
+        equipmentId: 'eq-005',
+        title: 'Kalibrácia SpO2 senzora',
+        description: 'Pacientský monitor vykazuje odchýlku ±3% pri meraní saturácie. Potrebná kalibrácia.',
+        priority: 'LOW',
+        status: 'CLOSED',
+        createdAt: '2024-01-20T07:00:00Z',
+      },
+      {
+        id: 'sr-006',
+        equipmentId: 'eq-001',
+        title: 'Aktualizácia softvéru ultrazvuku',
+        description: 'Dostupná aktualizácia firmvéru verzie 3.2.1 od výrobcu Philips. Obsahuje bezpečnostné záplaty.',
+        priority: 'MEDIUM',
+        status: 'OPEN',
+        createdAt: '2024-04-22T13:15:00Z',
+      },
+    ]);
+  }
+
+  private getFilteredSortedItems(): any[] {
+    let items = this.serviceRequests ?? [];
+
+    if (this.statusFilters.length > 0) {
+      items = items.filter(i => this.statusFilters.includes(i.status));
+    }
+
+    if (this.sortBy === 'priority') {
+      items = [...items].sort((a, b) => {
+        const diff = PRIORITY_ORDER[a.priority as ServicePriority] - PRIORITY_ORDER[b.priority as ServicePriority];
+        return this.sortAsc ? diff : -diff;
+      });
+    } else if (this.sortBy === 'createdAt') {
+      items = [...items].sort((a, b) => {
+        const diff = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        return this.sortAsc ? diff : -diff;
+      });
+    }
+
+    return items;
   }
 
   private toggleStatusFilter(status: ServiceStatus) {
@@ -116,13 +133,21 @@ export class XdsInventoryServiceList {
       : [...this.statusFilters, status];
   }
 
+  private toggleSort(field: SortField) {
+    if (this.sortBy === field) {
+      this.sortAsc = !this.sortAsc;
+    } else {
+      this.sortBy = field;
+      this.sortAsc = true;
+    }
+  }
+
   private formatDate(iso: string): string {
     return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
   render() {
-    const all = this.getServiceRequests();
-    const items = this.getFilteredItems();
+    const items = this.getFilteredSortedItems();
     const isFiltered = this.statusFilters.length > 0;
 
     return (
@@ -130,7 +155,7 @@ export class XdsInventoryServiceList {
         <div class="list-header">
           <h2>Service Requests</h2>
           <span class="item-count">
-            {isFiltered ? `${items.length} of ${all.length}` : items.length} requests
+            {isFiltered ? `${items.length} of ${(this.serviceRequests ?? []).length}` : items.length} requests
           </span>
         </div>
 
@@ -140,46 +165,49 @@ export class XdsInventoryServiceList {
             <md-chip-set>
               {SERVICE_STATUSES.map(status => (
                 <span class={`status-chip-wrap status-chip-wrap--${STATUS_CLASS[status]}`}>
-                  <md-filter-chip
-                    key={status}
-                    selected={this.statusFilters.includes(status)}
-                    onClick={() => this.toggleStatusFilter(status)}
-                  >
+                  <md-filter-chip key={status} selected={this.statusFilters.includes(status)} onClick={() => this.toggleStatusFilter(status)}>
                     {status}
                   </md-filter-chip>
                 </span>
               ))}
             </md-chip-set>
           </div>
+
+          <div class="sort-group">
+            <span class="control-label">Sort by</span>
+            <div class="sort-buttons">
+              <button class={`sort-btn${this.sortBy === 'priority' ? ' sort-btn--active' : ''}`} onClick={() => this.toggleSort('priority')}>
+                Priority
+                {this.sortBy === 'priority' && <md-icon>{this.sortAsc ? 'arrow_upward' : 'arrow_downward'}</md-icon>}
+              </button>
+              <button class={`sort-btn${this.sortBy === 'createdAt' ? ' sort-btn--active' : ''}`} onClick={() => this.toggleSort('createdAt')}>
+                Date created
+                {this.sortBy === 'createdAt' && <md-icon>{this.sortAsc ? 'arrow_upward' : 'arrow_downward'}</md-icon>}
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="service-list">
-          {items.map(req => (
-            <div class={`service-item service-item--${STATUS_CLASS[req.status]}`} key={req.id}>
-              <div class={`status-indicator status-indicator--${STATUS_CLASS[req.status]}`}>
-                <md-icon>{STATUS_ICONS[req.status]}</md-icon>
+        <md-list>
+          {items.map(item => (
+            <md-list-item key={item.id}>
+              <div slot="headline">{item.title}</div>
+              <div slot="supporting-text">
+                <div>{item.description}</div>
+                <div>{'Created: ' + this.formatDate(item.createdAt)}</div>
               </div>
-              <div class="item-content">
-                <div class="item-primary">
-                  <span class="item-title">{req.title}</span>
-                  <span class={`item-status item-status--${STATUS_CLASS[req.status]}`}>{req.status}</span>
-                </div>
-                <p class="item-description">{req.description}</p>
-                <div class="item-meta">
-                  <span class="meta-equipment">
-                    <md-icon>medical_services</md-icon>
-                    {req.equipmentName}
-                    <span class="meta-inv">{req.inventoryNumber}</span>
-                  </span>
-                  <span class="meta-date">
-                    <md-icon>calendar_today</md-icon>
-                    {this.formatDate(req.createdAt)}
-                  </span>
-                </div>
+              <md-icon slot="start">build</md-icon>
+              <div slot="end" class="item-end">
+                <span class={`item-priority item-priority--${PRIORITY_CLASS[item.priority as ServicePriority]}`}>
+                  {item.priority}
+                </span>
+                <span class={`item-status item-status--${STATUS_CLASS[item.status as ServiceStatus]}`}>
+                  {item.status}
+                </span>
               </div>
-            </div>
+            </md-list-item>
           ))}
-        </div>
+        </md-list>
       </Host>
     );
   }

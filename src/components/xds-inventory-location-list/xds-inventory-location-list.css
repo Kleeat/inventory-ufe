@@ -1,5 +1,7 @@
 :host {
   display: block;
+  padding: 16px;
+  font-family: Roboto, sans-serif;
 }
 
 /* ── Header ── */
@@ -20,40 +22,10 @@
 
 .item-count {
   font-size: 0.8125rem;
-  color: #666;
-  background: #e3eaf5;
   border-radius: 12px;
   padding: 2px 10px;
-}
-
-/* ── Controls ── */
-
-.controls {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 20px;
-  padding: 14px 16px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.filter-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.control-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #555;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  min-width: 60px;
-  flex-shrink: 0;
+  border: 1px solid currentColor;
+  opacity: 0.6;
 }
 
 /* ── Location grid ── */
@@ -67,18 +39,21 @@
 /* ── Location card ── */
 
 .location-card {
-  background: #ffffff;
+  background-color: var(--md-sys-color-surface);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
 
 .card-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.card-header-top {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px;
-  border-bottom: 1px solid #eef1f6;
 }
 
 .card-icon {
@@ -86,11 +61,11 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #e3eaf5;
+  background: var(--md-sys-color-primary-container, #e3eaf5);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1565c0;
+  color: var(--md-sys-color-on-primary-container, #1565c0);
 }
 
 .card-title-block {
@@ -104,12 +79,11 @@
 .card-name {
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #1a1a1a;
 }
 
 .card-breadcrumb {
   font-size: 0.75rem;
-  color: #888;
+  opacity: 0.6;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -120,9 +94,18 @@
   font-size: 0.8125rem;
   font-weight: 600;
   color: #1565c0;
-  background: #e3eaf5;
+  background: var(--md-sys-color-primary-container, #e3eaf5);
   border-radius: 12px;
   padding: 2px 10px;
+}
+
+/* ── Card description ── */
+
+.card-description {
+  margin: 8px 0 0;
+  font-size: 0.8125rem;
+  font-style: italic;
+  opacity: 0.6;
 }
 
 /* ── Equipment rows inside card ── */
@@ -130,78 +113,64 @@
 .equipment-rows {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .equipment-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 16px;
-  border-bottom: 1px solid #f4f6fa;
-}
-
-.equipment-row:last-child {
-  border-bottom: none;
+  padding: 8px 16px;
 }
 
 .eq-icon {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #f0f4ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: #1565c0;
-  --md-icon-size: 16px;
+  --md-icon-size: 18px;
+}
+
+.eq-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .eq-name {
-  flex: 1;
   font-size: 0.875rem;
-  color: #1a1a1a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.eq-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .eq-inv {
   font-size: 0.75rem;
-  color: #aaa;
   font-family: monospace;
-  flex-shrink: 0;
+  opacity: 0.5;
 }
 
-.eq-condition {
+.eq-status {
   font-size: 0.6875rem;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: 4px;
   padding: 2px 7px;
-  flex-shrink: 0;
+  white-space: nowrap;
 }
 
-.eq-condition--excellent,
-.eq-condition--good {
-  background: #e8f5e9;
-  color: #2e7d32;
-}
-
-.eq-condition--fair {
-  background: #fff3e0;
-  color: #e65100;
-}
-
-.eq-condition--poor {
-  background: #fbe9e7;
-  color: #bf360c;
-}
-
-.eq-condition--out-of-service {
-  background: #ffebee;
-  color: #b71c1c;
-}
+.eq-status--active        { background: #e8f5e9; color: #2e7d32; }
+.eq-status--inactive      { background: #f5f5f5; color: #616161; }
+.eq-status--maintenance   { background: #fff3e0; color: #e65100; }
+.eq-status--decommissioned { background: #ffebee; color: #b71c1c; }
 
 /* ── Empty state ── */
 
@@ -209,6 +178,6 @@
   margin: 0;
   padding: 16px;
   font-size: 0.8125rem;
-  color: #aaa;
+  opacity: 0.5;
   text-align: center;
 }
