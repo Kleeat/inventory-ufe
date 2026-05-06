@@ -1,5 +1,7 @@
 :host {
   display: block;
+  padding: 16px;
+  font-family: Roboto, sans-serif;
 }
 
 /* ── Header ── */
@@ -20,23 +22,21 @@
 
 .item-count {
   font-size: 0.8125rem;
-  color: #666;
-  background: #e3eaf5;
   border-radius: 12px;
   padding: 2px 10px;
+  border: 1px solid currentColor;
+  opacity: 0.6;
 }
 
-/* ── Controls (filters + sort) ── */
+/* ── Controls ── */
 
 .controls {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   padding: 14px 16px;
-  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .filter-group,
@@ -49,81 +49,66 @@
 
 .sort-group {
   padding-top: 8px;
-  border-top: 1px solid #e8edf4;
 }
 
-/* Condition chip colours — CSS custom properties cascade into md-filter-chip's shadow DOM */
-.cond-chip-wrap--excellent md-filter-chip,
-.cond-chip-wrap--good md-filter-chip {
+.control-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 60px;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+/* ── Status filter chip colours ── */
+
+.status-chip-wrap--active md-filter-chip {
   --md-filter-chip-selected-container-color: #e8f5e9;
   --md-filter-chip-selected-label-text-color: #2e7d32;
   --md-filter-chip-selected-leading-icon-color: #2e7d32;
   --md-filter-chip-selected-hover-label-text-color: #2e7d32;
   --md-filter-chip-selected-hover-leading-icon-color: #2e7d32;
-  --md-filter-chip-hover-label-text-color: #2e7d32;
 }
-
-.cond-chip-wrap--excellent md-filter-chip:hover,
-.cond-chip-wrap--good md-filter-chip:hover {
+.status-chip-wrap--active md-filter-chip:hover {
   --md-filter-chip-selected-container-color: #c8e6c9;
-  --md-filter-chip-selected-label-text-color: #2e7d32;
-  --md-filter-chip-selected-leading-icon-color: #2e7d32;
-  --md-filter-chip-selected-hover-label-text-color: #2e7d32;
-  --md-filter-chip-selected-hover-leading-icon-color: #2e7d32;
 }
 
-.cond-chip-wrap--fair md-filter-chip {
+.status-chip-wrap--inactive md-filter-chip {
+  --md-filter-chip-selected-container-color: #f5f5f5;
+  --md-filter-chip-selected-label-text-color: #616161;
+  --md-filter-chip-selected-leading-icon-color: #616161;
+  --md-filter-chip-selected-hover-label-text-color: #616161;
+  --md-filter-chip-selected-hover-leading-icon-color: #616161;
+}
+.status-chip-wrap--inactive md-filter-chip:hover {
+  --md-filter-chip-selected-container-color: #eeeeee;
+}
+
+.status-chip-wrap--maintenance md-filter-chip {
   --md-filter-chip-selected-container-color: #fff3e0;
   --md-filter-chip-selected-label-text-color: #e65100;
   --md-filter-chip-selected-leading-icon-color: #e65100;
   --md-filter-chip-selected-hover-label-text-color: #e65100;
   --md-filter-chip-selected-hover-leading-icon-color: #e65100;
-  --md-filter-chip-hover-label-text-color: #e65100;
 }
-
-.cond-chip-wrap--fair md-filter-chip:hover {
+.status-chip-wrap--maintenance md-filter-chip:hover {
   --md-filter-chip-selected-container-color: #ffe0b2;
-  --md-filter-chip-selected-label-text-color: #e65100;
-  --md-filter-chip-selected-leading-icon-color: #e65100;
-  --md-filter-chip-selected-hover-label-text-color: #e65100;
-  --md-filter-chip-selected-hover-leading-icon-color: #e65100;
 }
 
-.cond-chip-wrap--poor md-filter-chip {
-  --md-filter-chip-selected-container-color: #fbe9e7;
-  --md-filter-chip-selected-label-text-color: #bf360c;
-  --md-filter-chip-selected-leading-icon-color: #bf360c;
-  --md-filter-chip-selected-hover-label-text-color: #bf360c;
-  --md-filter-chip-selected-hover-leading-icon-color: #bf360c;
-  --md-filter-chip-hover-label-text-color: #bf360c;
-}
-
-.cond-chip-wrap--poor md-filter-chip:hover {
-  --md-filter-chip-selected-container-color: #ffccbc;
-  --md-filter-chip-selected-label-text-color: #bf360c;
-  --md-filter-chip-selected-leading-icon-color: #bf360c;
-  --md-filter-chip-selected-hover-label-text-color: #bf360c;
-  --md-filter-chip-selected-hover-leading-icon-color: #bf360c;
-}
-
-.cond-chip-wrap--out-of-service md-filter-chip {
+.status-chip-wrap--decommissioned md-filter-chip {
   --md-filter-chip-selected-container-color: #ffebee;
   --md-filter-chip-selected-label-text-color: #b71c1c;
   --md-filter-chip-selected-leading-icon-color: #b71c1c;
   --md-filter-chip-selected-hover-label-text-color: #b71c1c;
   --md-filter-chip-selected-hover-leading-icon-color: #b71c1c;
-  --md-filter-chip-hover-label-text-color: #b71c1c;
 }
-
-.cond-chip-wrap--out-of-service md-filter-chip:hover {
+.status-chip-wrap--decommissioned md-filter-chip:hover {
   --md-filter-chip-selected-container-color: #ffcdd2;
-  --md-filter-chip-selected-label-text-color: #b71c1c;
-  --md-filter-chip-selected-leading-icon-color: #b71c1c;
-  --md-filter-chip-selected-hover-label-text-color: #b71c1c;
-  --md-filter-chip-selected-hover-leading-icon-color: #b71c1c;
 }
 
-/* Sort buttons */
+/* ── Sort buttons ── */
+
 .sort-buttons {
   display: flex;
   gap: 8px;
@@ -135,162 +120,118 @@
   gap: 6px;
   padding: 6px 16px;
   border-radius: 20px;
-  border: 1px solid #c2cfe0;
+  border: 1px solid currentColor;
   background: transparent;
-  color: #444;
   font-size: 0.875rem;
   font-family: Roboto, sans-serif;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  opacity: 0.7;
+  transition: opacity 0.15s;
   --md-icon-size: 16px;
 }
 
 .sort-btn:hover {
-  background: #f0f4ff;
-  border-color: #1565c0;
-  color: #1565c0;
+  opacity: 1;
 }
 
 .sort-btn--active {
   background: #1565c0;
   color: #ffffff;
   border-color: #1565c0;
+  opacity: 1;
 }
 
 .sort-btn--active:hover {
   background: #1255a8;
   border-color: #1255a8;
-  color: #ffffff;
 }
 
-.control-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #555;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  min-width: 60px;
-  flex-shrink: 0;
-}
+/* ── List ── */
 
-/* ── Equipment list ── */
-
-.equipment-list {
+md-list {
+  --md-list-container-color: transparent;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding: 0;
 }
 
-.equipment-item {
+md-list-item {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  background: #ffffff;
-  border-radius: 12px;
   padding: 14px 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  background-color: var(--md-sys-color-surface);
+  --md-list-item-label-text-size: 0.9375rem;
+  --md-list-item-label-text-weight: 500;
+  --md-list-item-supporting-text-size: 0.8125rem;
+  --md-list-item-leading-icon-color: #1565c0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.item-icon {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #e3eaf5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #1565c0;
-}
+/* ── End slot ── */
 
-.item-content {
-  flex: 1;
-  min-width: 0;
+.item-end {
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 6px;
+  padding: 4px 0;
 }
 
-.item-primary {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.item-name {
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: #1a1a1a;
+.item-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 2px 8px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.item-inv {
-  font-size: 0.75rem;
-  color: #888;
-  flex-shrink: 0;
-  font-family: monospace;
-}
-
-.item-secondary {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.item-type {
-  font-size: 0.75rem;
-  color: #1565c0;
-  background: #e3eaf5;
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-weight: 500;
-}
-
-.item-condition {
-  font-size: 0.75rem;
-  font-weight: 500;
-  border-radius: 4px;
-  padding: 2px 8px;
-}
-
-.item-condition--excellent,
-.item-condition--good {
+.item-status--active {
   background: #e8f5e9;
   color: #2e7d32;
 }
 
-.item-condition--fair {
+.item-status--inactive {
+  background: #f5f5f5;
+  color: #616161;
+}
+
+.item-status--maintenance {
   background: #fff3e0;
   color: #e65100;
 }
 
-.item-condition--poor {
-  background: #fbe9e7;
-  color: #bf360c;
-}
-
-.item-condition--out-of-service {
+.item-status--decommissioned {
   background: #ffebee;
   color: #b71c1c;
 }
 
-.item-location,
-.item-lifespan {
+.service-badge {
   display: inline-flex;
   align-items: center;
   gap: 3px;
   font-size: 0.75rem;
-  color: #555;
+  font-weight: 600;
+  color: #e65100;
+  background: #fff3e0;
+  border-radius: 4px;
+  padding: 2px 6px;
+  --md-icon-size: 14px;
 }
 
-.item-location md-icon,
-.item-lifespan md-icon {
-  font-size: 14px;
-  --md-icon-size: 14px;
-  color: #888;
+/* ── Location ── */
+
+.item-dept {
+  font-weight: 600;
+}
+
+/* ── Notes ── */
+
+.item-notes {
+  font-style: italic;
+  opacity: 0.6;
+  margin-top: 2px;
 }

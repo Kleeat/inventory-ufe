@@ -1,45 +1,27 @@
 import { Component, Host, h, State } from '@stencil/core';
+import '@material/web/list/list';
+import '@material/web/list/list-item';
+import '@material/web/icon/icon';
 
-type EquipmentType = 'Airway' | 'Cardiac' | 'Trauma' | 'Medication' | 'Monitoring' | 'Immobilization';
-type EquipmentCondition = 'Excellent' | 'Good' | 'Fair' | 'Poor' | 'Out of Service';
-type SortField = 'condition' | 'lifespan';
+type EquipmentStatus = 'ACTIVE' | 'INACTIVE' | 'UNDER_MAINTENANCE' | 'DECOMMISSIONED';
+type SortField = 'status' | 'warrantyExpiry';
 
-interface AmbulanceEquipment {
-  name: string;
-  type: EquipmentType;
-  inventoryNumber: string;
-  condition: EquipmentCondition;
-  location: string;
-  replaceBy: string;
-}
+const EQUIPMENT_STATUSES: EquipmentStatus[] = ['ACTIVE', 'INACTIVE', 'UNDER_MAINTENANCE', 'DECOMMISSIONED'];
 
-const EQUIPMENT_TYPES: EquipmentType[] = ['Airway', 'Cardiac', 'Trauma', 'Medication', 'Monitoring', 'Immobilization'];
-const EQUIPMENT_CONDITIONS: EquipmentCondition[] = ['Excellent', 'Good', 'Fair', 'Poor', 'Out of Service'];
-
-const TYPE_ICONS: Record<EquipmentType, string> = {
-  Airway: 'air',
-  Cardiac: 'monitor_heart',
-  Trauma: 'emergency',
-  Medication: 'medication',
-  Monitoring: 'vital_signs',
-  Immobilization: 'accessibility_new',
+const STATUS_CLASS: Record<EquipmentStatus, string> = {
+  'ACTIVE': 'active',
+  'INACTIVE': 'inactive',
+  'UNDER_MAINTENANCE': 'maintenance',
+  'DECOMMISSIONED': 'decommissioned',
 };
 
-const CONDITION_CLASS: Record<EquipmentCondition, string> = {
-  'Excellent': 'excellent',
-  'Good': 'good',
-  'Fair': 'fair',
-  'Poor': 'poor',
-  'Out of Service': 'out-of-service',
+const STATUS_ORDER: Record<EquipmentStatus, number> = {
+  'DECOMMISSIONED': 0,
+  'INACTIVE': 1,
+  'UNDER_MAINTENANCE': 2,
+  'ACTIVE': 3,
 };
 
-const CONDITION_ORDER: Record<EquipmentCondition, number> = {
-  'Out of Service': 0,
-  'Poor': 1,
-  'Fair': 2,
-  'Good': 3,
-  'Excellent': 4,
-};
 
 @Component({
   tag: 'xds-inventory-equipment-list',
@@ -47,44 +29,102 @@ const CONDITION_ORDER: Record<EquipmentCondition, number> = {
   shadow: true,
 })
 export class XdsInventoryEquipmentList {
-  @State() typeFilters: EquipmentType[] = [];
-  @State() conditionFilters: EquipmentCondition[] = [];
+  equipmentList: any[] = [];
+
+  @State() statusFilters: EquipmentStatus[] = [];
   @State() sortBy: SortField | null = null;
   @State() sortAsc: boolean = true;
 
-  private getEquipmentList(): AmbulanceEquipment[] {
-    return [
-      { name: 'BVM Resuscitator', type: 'Airway', inventoryNumber: 'INV-001', condition: 'Good', location: 'Unit 101', replaceBy: '2027-03-15' },
-      { name: 'Defibrillator AED', type: 'Cardiac', inventoryNumber: 'INV-002', condition: 'Excellent', location: 'Unit 101', replaceBy: '2028-06-01' },
-      { name: 'Suction Unit', type: 'Airway', inventoryNumber: 'INV-003', condition: 'Fair', location: 'Unit 102', replaceBy: '2026-09-30' },
-      { name: 'Trauma Kit', type: 'Trauma', inventoryNumber: 'INV-004', condition: 'Good', location: 'Unit 102', replaceBy: '2027-01-20' },
-      { name: 'Cardiac Monitor', type: 'Monitoring', inventoryNumber: 'INV-005', condition: 'Excellent', location: 'Unit 101', replaceBy: '2029-11-15' },
-      { name: 'Cervical Collar Set', type: 'Immobilization', inventoryNumber: 'INV-006', condition: 'Poor', location: 'Station Storage', replaceBy: '2026-04-01' },
-      { name: 'IV Infusion Pump', type: 'Medication', inventoryNumber: 'INV-007', condition: 'Good', location: 'Unit 103', replaceBy: '2027-08-10' },
-      { name: 'Pulse Oximeter', type: 'Monitoring', inventoryNumber: 'INV-008', condition: 'Fair', location: 'Unit 102', replaceBy: '2026-12-31' },
-      { name: 'Stretcher', type: 'Trauma', inventoryNumber: 'INV-009', condition: 'Good', location: 'Unit 101', replaceBy: '2028-03-22' },
-      { name: 'Laryngoscope Set', type: 'Airway', inventoryNumber: 'INV-010', condition: 'Out of Service', location: 'Station Storage', replaceBy: '2025-10-05' },
-    ];
+  async componentWillLoad() {
+    this.equipmentList = await this.getEquipmentListAsync();
   }
 
-  private getFilteredSortedItems(): AmbulanceEquipment[] {
-    let items = this.getEquipmentList();
+  private async getEquipmentListAsync() {
+    return await Promise.resolve([
+      {
+        id: 'eq-001',
+        name: 'Ultrazvuk Philips EPIQ 7',
+        type: 'Ultrasonograf',
+        inventoryNumber: 'INV-2024-00421',
+        warrantyExpiry: '2026-05-06',
+        status: 'ACTIVE',
+        notes: 'Kalibrovaný 2024-03-01',
+        openServiceRequestCount: 2,
+        location: { department: 'Kardiológia', building: 'Pavilón A', floor: '2. poschodie', room: 'Miestnosť 204' },
+      },
+      {
+        id: 'eq-002',
+        name: 'Defibrilátor Zoll X Series',
+        type: 'Defibrilátor',
+        inventoryNumber: 'INV-2023-00185',
+        warrantyExpiry: '2027-11-30',
+        status: 'ACTIVE',
+        notes: null,
+        openServiceRequestCount: 0,
+        location: { department: 'Urgentná medicína', building: 'Pavilón C', floor: 'Prízemie', room: 'Trauma bay 1' },
+      },
+      {
+        id: 'eq-003',
+        name: 'Ventilátor Dräger Evita V300',
+        type: 'Ventilátor',
+        inventoryNumber: 'INV-2022-00077',
+        warrantyExpiry: '2025-08-15',
+        status: 'UNDER_MAINTENANCE',
+        notes: 'Plánovaná výmena ventilu',
+        openServiceRequestCount: 1,
+        location: { department: 'Jednotka intenzívnej starostlivosti', building: 'Pavilón B', floor: '3. poschodie', room: 'Miestnosť 312' },
+      },
+      {
+        id: 'eq-004',
+        name: 'Infúzna pumpa B. Braun',
+        type: 'Infúzna pumpa',
+        inventoryNumber: 'INV-2021-00334',
+        warrantyExpiry: '2024-03-01',
+        status: 'INACTIVE',
+        notes: null,
+        openServiceRequestCount: 0,
+        location: { department: 'Chirurgia', building: 'Pavilón D', floor: '1. poschodie', room: 'Sklad 110' },
+      },
+      {
+        id: 'eq-005',
+        name: 'Pacientský monitor Mindray BeneVision N17',
+        type: 'Monitor',
+        inventoryNumber: 'INV-2024-00512',
+        warrantyExpiry: '2028-02-20',
+        status: 'ACTIVE',
+        notes: null,
+        openServiceRequestCount: 0,
+        location: { department: 'Neurológia', building: 'Pavilón A', floor: '4. poschodie', room: 'Miestnosť 401' },
+      },
+      {
+        id: 'eq-006',
+        name: 'RTG prístroj Siemens Multix',
+        type: 'RTG',
+        inventoryNumber: 'INV-2019-00023',
+        warrantyExpiry: '2023-06-30',
+        status: 'DECOMMISSIONED',
+        notes: 'Nahradený novším modelom',
+        openServiceRequestCount: 0,
+        location: { department: 'Rádiológia', building: 'Pavilón E', floor: 'Suterén', room: 'RTG kabína 2' },
+      },
+    ]);
+  }
 
-    if (this.typeFilters.length > 0) {
-      items = items.filter(i => this.typeFilters.includes(i.type));
-    }
-    if (this.conditionFilters.length > 0) {
-      items = items.filter(i => this.conditionFilters.includes(i.condition));
+  private getFilteredSortedItems(): any[] {
+    let items = this.equipmentList ?? [];
+
+    if (this.statusFilters.length > 0) {
+      items = items.filter(i => this.statusFilters.includes(i.status));
     }
 
-    if (this.sortBy === 'condition') {
+    if (this.sortBy === 'status') {
       items = [...items].sort((a, b) => {
-        const diff = CONDITION_ORDER[a.condition] - CONDITION_ORDER[b.condition];
+        const diff = STATUS_ORDER[a.status as EquipmentStatus] - STATUS_ORDER[b.status as EquipmentStatus];
         return this.sortAsc ? diff : -diff;
       });
-    } else if (this.sortBy === 'lifespan') {
+    } else if (this.sortBy === 'warrantyExpiry') {
       items = [...items].sort((a, b) => {
-        const diff = new Date(a.replaceBy).getTime() - new Date(b.replaceBy).getTime();
+        const diff = new Date(a.warrantyExpiry).getTime() - new Date(b.warrantyExpiry).getTime();
         return this.sortAsc ? diff : -diff;
       });
     }
@@ -92,12 +132,10 @@ export class XdsInventoryEquipmentList {
     return items;
   }
 
-  private toggleTypeFilter(type: EquipmentType) {
-    this.typeFilters = this.typeFilters.includes(type) ? this.typeFilters.filter(t => t !== type) : [...this.typeFilters, type];
-  }
-
-  private toggleConditionFilter(cond: EquipmentCondition) {
-    this.conditionFilters = this.conditionFilters.includes(cond) ? this.conditionFilters.filter(c => c !== cond) : [...this.conditionFilters, cond];
+  private toggleStatusFilter(status: EquipmentStatus) {
+    this.statusFilters = this.statusFilters.includes(status)
+      ? this.statusFilters.filter(s => s !== status)
+      : [...this.statusFilters, status];
   }
 
   private toggleSort(field: SortField) {
@@ -113,39 +151,28 @@ export class XdsInventoryEquipmentList {
     return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
+
   render() {
-    const all = this.getEquipmentList();
     const items = this.getFilteredSortedItems();
-    const isFiltered = this.typeFilters.length > 0 || this.conditionFilters.length > 0;
+    const isFiltered = this.statusFilters.length > 0;
 
     return (
       <Host>
         <div class="list-header">
           <h2>Equipment</h2>
           <span class="item-count">
-            {isFiltered ? `${items.length} of ${all.length}` : items.length} items
+            {isFiltered ? `${items.length} of ${(this.equipmentList ?? []).length}` : items.length} items
           </span>
         </div>
 
         <div class="controls">
           <div class="filter-group">
-            <span class="control-label">Type</span>
+            <span class="control-label">Status</span>
             <md-chip-set>
-              {EQUIPMENT_TYPES.map(type => (
-                <md-filter-chip key={type} selected={this.typeFilters.includes(type)} onClick={() => this.toggleTypeFilter(type)}>
-                  {type}
-                </md-filter-chip>
-              ))}
-            </md-chip-set>
-          </div>
-
-          <div class="filter-group">
-            <span class="control-label">Condition</span>
-            <md-chip-set>
-              {EQUIPMENT_CONDITIONS.map(cond => (
-                <span class={`cond-chip-wrap cond-chip-wrap--${CONDITION_CLASS[cond]}`}>
-                  <md-filter-chip key={cond} selected={this.conditionFilters.includes(cond)} onClick={() => this.toggleConditionFilter(cond)}>
-                    {cond}
+              {EQUIPMENT_STATUSES.map(status => (
+                <span class={`status-chip-wrap status-chip-wrap--${STATUS_CLASS[status]}`}>
+                  <md-filter-chip key={status} selected={this.statusFilters.includes(status)} onClick={() => this.toggleStatusFilter(status)}>
+                    {status}
                   </md-filter-chip>
                 </span>
               ))}
@@ -155,45 +182,45 @@ export class XdsInventoryEquipmentList {
           <div class="sort-group">
             <span class="control-label">Sort by</span>
             <div class="sort-buttons">
-              <button class={`sort-btn${this.sortBy === 'condition' ? ' sort-btn--active' : ''}`} onClick={() => this.toggleSort('condition')}>
-                Condition
-                {this.sortBy === 'condition' && <md-icon>{this.sortAsc ? 'arrow_upward' : 'arrow_downward'}</md-icon>}
+              <button class={`sort-btn${this.sortBy === 'status' ? ' sort-btn--active' : ''}`} onClick={() => this.toggleSort('status')}>
+                Status
+                {this.sortBy === 'status' && <md-icon>{this.sortAsc ? 'arrow_upward' : 'arrow_downward'}</md-icon>}
               </button>
-              <button class={`sort-btn${this.sortBy === 'lifespan' ? ' sort-btn--active' : ''}`} onClick={() => this.toggleSort('lifespan')}>
-                Replace date
-                {this.sortBy === 'lifespan' && <md-icon>{this.sortAsc ? 'arrow_upward' : 'arrow_downward'}</md-icon>}
+              <button class={`sort-btn${this.sortBy === 'warrantyExpiry' ? ' sort-btn--active' : ''}`} onClick={() => this.toggleSort('warrantyExpiry')}>
+                Warranty expiry
+                {this.sortBy === 'warrantyExpiry' && <md-icon>{this.sortAsc ? 'arrow_upward' : 'arrow_downward'}</md-icon>}
               </button>
             </div>
           </div>
         </div>
 
-        <div class="equipment-list">
+        <md-list>
           {items.map(item => (
-            <div class="equipment-item" key={item.inventoryNumber}>
-              <div class="item-icon">
-                <md-icon>{TYPE_ICONS[item.type]}</md-icon>
-              </div>
-              <div class="item-content">
-                <div class="item-primary">
-                  <span class="item-name">{item.name}</span>
-                  <span class="item-inv">{item.inventoryNumber}</span>
+            <md-list-item key={item.id}>
+              <div slot="headline">{item.name}</div>
+              <div slot="supporting-text">
+                <div>{item.inventoryNumber + ' · ' + item.type + ' · Warranty: ' + this.formatDate(item.warrantyExpiry)}</div>
+                <div>
+                  <strong class="item-dept">{item.location?.department}</strong>
+                  {[item.location?.building, item.location?.floor, item.location?.room].filter(Boolean).map(part => ` · ${part}`)}
                 </div>
-                <div class="item-secondary">
-                  <span class="item-type">{item.type}</span>
-                  <span class={`item-condition item-condition--${CONDITION_CLASS[item.condition]}`}>{item.condition}</span>
-                  <span class="item-location">
-                    <md-icon>location_on</md-icon>
-                    {item.location}
-                  </span>
-                  <span class="item-lifespan">
-                    <md-icon>event</md-icon>
-                    {this.formatDate(item.replaceBy)}
-                  </span>
-                </div>
+                {item.notes && <div class="item-notes">{item.notes}</div>}
               </div>
-            </div>
+              <md-icon slot="start">medical_services</md-icon>
+              <div slot="end" class="item-end">
+                {item.openServiceRequestCount > 0 && (
+                  <span class="service-badge">
+                    <md-icon>warning</md-icon>
+                    {item.openServiceRequestCount}
+                  </span>
+                )}
+                <span class={`item-status item-status--${STATUS_CLASS[item.status as EquipmentStatus]}`}>
+                  {item.status}
+                </span>
+              </div>
+            </md-list-item>
           ))}
-        </div>
+        </md-list>
       </Host>
     );
   }
