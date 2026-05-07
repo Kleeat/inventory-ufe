@@ -9,26 +9,25 @@ type SortField = 'status' | 'warrantyExpiry';
 const EQUIPMENT_STATUSES: EquipmentStatus[] = ['ACTIVE', 'INACTIVE', 'UNDER_MAINTENANCE', 'DECOMMISSIONED'];
 
 const STATUS_LABEL: Record<EquipmentStatus, string> = {
-  'ACTIVE': 'Active',
-  'INACTIVE': 'Inactive',
-  'UNDER_MAINTENANCE': 'Under Maintenance',
-  'DECOMMISSIONED': 'Decommissioned',
+  ACTIVE: 'Active',
+  INACTIVE: 'Inactive',
+  UNDER_MAINTENANCE: 'Under Maintenance',
+  DECOMMISSIONED: 'Decommissioned',
 };
 
 const STATUS_CLASS: Record<EquipmentStatus, string> = {
-  'ACTIVE': 'active',
-  'INACTIVE': 'inactive',
-  'UNDER_MAINTENANCE': 'maintenance',
-  'DECOMMISSIONED': 'decommissioned',
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+  UNDER_MAINTENANCE: 'maintenance',
+  DECOMMISSIONED: 'decommissioned',
 };
 
 const STATUS_ORDER: Record<EquipmentStatus, number> = {
-  'DECOMMISSIONED': 0,
-  'INACTIVE': 1,
-  'UNDER_MAINTENANCE': 2,
-  'ACTIVE': 3,
+  DECOMMISSIONED: 0,
+  INACTIVE: 1,
+  UNDER_MAINTENANCE: 2,
+  ACTIVE: 3,
 };
-
 
 @Component({
   tag: 'xds-inventory-equipment-list',
@@ -143,9 +142,7 @@ export class XdsInventoryEquipmentList {
   }
 
   private toggleStatusFilter(status: EquipmentStatus) {
-    this.statusFilters = this.statusFilters.includes(status)
-      ? this.statusFilters.filter(s => s !== status)
-      : [...this.statusFilters, status];
+    this.statusFilters = this.statusFilters.includes(status) ? this.statusFilters.filter(s => s !== status) : [...this.statusFilters, status];
   }
 
   private toggleSort(field: SortField) {
@@ -161,13 +158,14 @@ export class XdsInventoryEquipmentList {
     ev.stopPropagation();
     navigator.clipboard.writeText(id);
     this.copiedId = id;
-    setTimeout(() => { this.copiedId = null; }, 1500);
+    setTimeout(() => {
+      this.copiedId = null;
+    }, 1500);
   }
 
   private formatDate(iso: string): string {
     return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
   }
-
 
   render() {
     const items = this.getFilteredSortedItems();
@@ -177,9 +175,7 @@ export class XdsInventoryEquipmentList {
       <Host>
         <div class="list-header">
           <h2>Equipment</h2>
-          <span class="item-count">
-            {isFiltered ? `${items.length} of ${(this.equipmentList ?? []).length}` : items.length} items
-          </span>
+          <span class="item-count">{isFiltered ? `${items.length} of ${(this.equipmentList ?? []).length}` : items.length} items</span>
         </div>
 
         <div class="controls">
@@ -235,13 +231,15 @@ export class XdsInventoryEquipmentList {
                     {item.openServiceRequestCount}
                   </span>
                 )}
-                <span class={`item-status item-status--${STATUS_CLASS[item.status as EquipmentStatus]}`}>
-                  {STATUS_LABEL[item.status as EquipmentStatus]}
-                </span>
+                <span class={`item-status item-status--${STATUS_CLASS[item.status as EquipmentStatus]}`}>{STATUS_LABEL[item.status as EquipmentStatus]}</span>
               </div>
             </md-list-item>
           ))}
         </md-list>
+
+        <md-filled-icon-button class="fab" onClick={() => this.entryClicked.emit('@new')}>
+          <md-icon>add</md-icon>
+        </md-filled-icon-button>
       </Host>
     );
   }

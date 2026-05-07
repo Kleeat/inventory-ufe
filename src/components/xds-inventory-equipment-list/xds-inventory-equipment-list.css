@@ -262,3 +262,27 @@ md-list-item {
 .id-btn md-icon {
   --md-icon-size: 13px;
 }
+
+/* ── FAB ── */
+
+.fab-wrap {
+  position: sticky;
+  bottom: 16px;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 16px;
+  pointer-events: none;
+  margin-top: 16px;
+}
+
+.fab {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  --md-filled-icon-button-container-size: 6rem;
+  --md-filled-icon-button-icon-size: 2.5rem;
+  z-index: 10;
+}

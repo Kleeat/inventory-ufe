@@ -181,6 +181,10 @@ export class XdsInventoryLocationList {
             );
           })}
         </div>
+
+        <md-filled-icon-button class="fab" onClick={() => this.entryClicked.emit('@new')}>
+          <md-icon>add</md-icon>
+        </md-filled-icon-button>
       </Host>
     );
   }
