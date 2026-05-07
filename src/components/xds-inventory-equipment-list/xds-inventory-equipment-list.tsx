@@ -104,14 +104,6 @@ export class XdsInventoryEquipmentList {
     }
   }
 
-  private copyId(ev: Event, id: string) {
-    ev.stopPropagation();
-    navigator.clipboard.writeText(id);
-    this.copiedId = id;
-    setTimeout(() => {
-      this.copiedId = null;
-    }, 1500);
-  }
 
   private formatDate(iso: string): string {
     return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -166,10 +158,6 @@ export class XdsInventoryEquipmentList {
                 <md-list-item key={item.id} type="button" onClick={() => this.entryClicked.emit(item.id)}>
                   <div slot="headline">{item.name}</div>
                   <div slot="supporting-text">
-                    <button class="id-btn" onClick={(ev: Event) => this.copyId(ev, item.id)}>
-                      <md-icon>{this.copiedId === item.id ? 'check' : 'content_copy'}</md-icon>
-                      {item.id}
-                    </button>
                     <div>{item.inventoryNumber + ' · ' + item.type + ' · Warranty: ' + this.formatDate(item.warrantyExpiry)}</div>
                     <div>
                       <strong class="item-dept">{item.location?.department}</strong>

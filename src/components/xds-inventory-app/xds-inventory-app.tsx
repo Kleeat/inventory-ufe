@@ -47,6 +47,7 @@ export class XdsInventoryApp {
         <Host>
           <xds-inventory-equipment-editor
             entry-id={entryId}
+            api-base={this.apiBase}
             oneditor-closed={() => navigate('./equipment')}
           ></xds-inventory-equipment-editor>
         </Host>
@@ -59,6 +60,7 @@ export class XdsInventoryApp {
         <Host>
           <xds-inventory-location-editor
             entry-id={entryId}
+            api-base={this.apiBase}
             oneditor-closed={() => navigate('./locations')}
           ></xds-inventory-location-editor>
         </Host>
@@ -71,6 +73,7 @@ export class XdsInventoryApp {
         <Host>
           <xds-inventory-service-editor
             entry-id={entryId}
+            api-base={this.apiBase}
             oneditor-closed={() => navigate('./services')}
           ></xds-inventory-service-editor>
         </Host>
@@ -115,12 +118,14 @@ export class XdsInventoryApp {
           )}
           {activeTab === 'locations' && (
             <xds-inventory-location-list
+              api-base={this.apiBase}
               onentry-clicked={(ev: CustomEvent<string>) => navigate('./locations/edit/' + ev.detail)}
               onequipment-clicked={(ev: CustomEvent<string>) => navigate('./equipment/edit/' + ev.detail)}
             ></xds-inventory-location-list>
           )}
           {activeTab === 'services' && (
             <xds-inventory-service-list
+              api-base={this.apiBase}
               onentry-clicked={(ev: CustomEvent<string>) => navigate('./services/edit/' + ev.detail)}
             ></xds-inventory-service-list>
           )}

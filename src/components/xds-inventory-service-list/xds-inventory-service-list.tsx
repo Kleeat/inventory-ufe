@@ -1,43 +1,43 @@
-import { Component, Host, h, State, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, h, Prop, State, Event, EventEmitter } from '@stencil/core';
 import '@material/web/list/list';
 import '@material/web/list/list-item';
 import '@material/web/icon/icon';
+import '@material/web/iconbutton/filled-icon-button';
+import { ServiceRequestsApi, ServiceRequest, ServiceRequestStatus, Priority, Configuration } from '../../api/inventory';
 
-type ServiceStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
-type ServicePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 type SortField = 'priority' | 'createdAt';
 
-const SERVICE_STATUSES: ServiceStatus[] = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
+const SERVICE_STATUSES: ServiceRequestStatus[] = ['NEW', 'ASSIGNED', 'IN_PROGRESS', 'CLOSED'];
 
-const STATUS_LABEL: Record<ServiceStatus, string> = {
-  'OPEN': 'Open',
+const STATUS_LABEL: Record<ServiceRequestStatus, string> = {
+  'NEW': 'New',
+  'ASSIGNED': 'Assigned',
   'IN_PROGRESS': 'In Progress',
-  'RESOLVED': 'Resolved',
   'CLOSED': 'Closed',
 };
 
-const PRIORITY_LABEL: Record<ServicePriority, string> = {
+const PRIORITY_LABEL: Record<Priority, string> = {
   'LOW': 'Low',
   'MEDIUM': 'Medium',
   'HIGH': 'High',
   'CRITICAL': 'Critical',
 };
 
-const STATUS_CLASS: Record<ServiceStatus, string> = {
-  'OPEN': 'open',
+const STATUS_CLASS: Record<ServiceRequestStatus, string> = {
+  'NEW': 'open',
+  'ASSIGNED': 'assigned',
   'IN_PROGRESS': 'in-progress',
-  'RESOLVED': 'resolved',
   'CLOSED': 'closed',
 };
 
-const PRIORITY_CLASS: Record<ServicePriority, string> = {
+const PRIORITY_CLASS: Record<Priority, string> = {
   'LOW': 'low',
   'MEDIUM': 'medium',
   'HIGH': 'high',
   'CRITICAL': 'critical',
 };
 
-const PRIORITY_ORDER: Record<ServicePriority, number> = {
+const PRIORITY_ORDER: Record<Priority, number> = {
   'LOW': 0,
   'MEDIUM': 1,
   'HIGH': 2,
@@ -50,79 +50,36 @@ const PRIORITY_ORDER: Record<ServicePriority, number> = {
   shadow: true,
 })
 export class XdsInventoryServiceList {
-  serviceRequests: any[] = [];
+  @Prop() apiBase: string = '';
 
-  @Event({ eventName: 'entry-clicked' }) entryClicked!: EventEmitter<string>;
-
-  @State() statusFilters: ServiceStatus[] = [];
+  @State() serviceRequests: ServiceRequest[] = [];
+  @State() statusFilters: ServiceRequestStatus[] = [];
   @State() sortBy: SortField | null = null;
   @State() sortAsc: boolean = true;
+
+  @Event({ eventName: 'entry-clicked' }) entryClicked!: EventEmitter<string>;
 
   async componentWillLoad() {
     this.serviceRequests = await this.getServiceRequestsAsync();
   }
 
-  private async getServiceRequestsAsync() {
-    return await Promise.resolve([
-      {
-        id: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
-        equipmentId: 'eq-001',
-        title: 'Porucha displeja – nereaguje na dotyk',
-        description: 'Displej prestáva reagovať po 30 minútach prevádzky. Potrebná výmena dotykového panela.',
-        priority: 'HIGH',
-        status: 'IN_PROGRESS',
-        createdAt: '2024-03-15T08:30:00Z',
-      },
-      {
-        id: 'sr-002',
-        equipmentId: 'eq-002',
-        title: 'Batéria sa nenabíja',
-        description: 'Defibrilátor Zoll X Series sa nedá nabiť. Indikátor nabíjania nesvieti pri pripojení na sieť.',
-        priority: 'CRITICAL',
-        status: 'OPEN',
-        createdAt: '2024-04-01T14:00:00Z',
-      },
-      {
-        id: 'sr-003',
-        equipmentId: 'eq-003',
-        title: 'Pravidelná údržba ventilátora',
-        description: 'Plánovaná ročná údržba podľa servisného plánu výrobcu Dräger.',
-        priority: 'MEDIUM',
-        status: 'RESOLVED',
-        createdAt: '2024-02-10T09:00:00Z',
-      },
-      {
-        id: 'sr-004',
-        equipmentId: 'eq-004',
-        title: 'Chybové hlásenie E-04',
-        description: 'Infúzna pumpa zobrazuje chybový kód E-04 pri spustení. Pumpa nie je schopná prevádzky.',
-        priority: 'HIGH',
-        status: 'OPEN',
-        createdAt: '2024-04-10T11:30:00Z',
-      },
-      {
-        id: 'sr-005',
-        equipmentId: 'eq-005',
-        title: 'Kalibrácia SpO2 senzora',
-        description: 'Pacientský monitor vykazuje odchýlku ±3% pri meraní saturácie. Potrebná kalibrácia.',
-        priority: 'LOW',
-        status: 'CLOSED',
-        createdAt: '2024-01-20T07:00:00Z',
-      },
-      {
-        id: 'sr-006',
-        equipmentId: 'eq-001',
-        title: 'Aktualizácia softvéru ultrazvuku',
-        description: 'Dostupná aktualizácia firmvéru verzie 3.2.1 od výrobcu Philips. Obsahuje bezpečnostné záplaty.',
-        priority: 'MEDIUM',
-        status: 'OPEN',
-        createdAt: '2024-04-22T13:15:00Z',
-      },
-    ]);
+  private async getServiceRequestsAsync(): Promise<ServiceRequest[]> {
+    try {
+      const configuration = new Configuration({ basePath: this.apiBase });
+      const api = new ServiceRequestsApi(configuration);
+      const response = await api.listServiceRequestsRaw({ pageSize: 1000 });
+      if (response.raw.status < 299) {
+        const page = await response.value();
+        return page.content || [];
+      }
+    } catch (err: any) {
+      // fall through to empty
+    }
+    return [];
   }
 
-  private getFilteredSortedItems(): any[] {
-    let items = this.serviceRequests ?? [];
+  private getFilteredSortedItems(): ServiceRequest[] {
+    let items = this.serviceRequests;
 
     if (this.statusFilters.length > 0) {
       items = items.filter(i => this.statusFilters.includes(i.status));
@@ -130,12 +87,12 @@ export class XdsInventoryServiceList {
 
     if (this.sortBy === 'priority') {
       items = [...items].sort((a, b) => {
-        const diff = PRIORITY_ORDER[a.priority as ServicePriority] - PRIORITY_ORDER[b.priority as ServicePriority];
+        const diff = PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
         return this.sortAsc ? diff : -diff;
       });
     } else if (this.sortBy === 'createdAt') {
       items = [...items].sort((a, b) => {
-        const diff = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        const diff = a.createdAt.getTime() - b.createdAt.getTime();
         return this.sortAsc ? diff : -diff;
       });
     }
@@ -143,7 +100,7 @@ export class XdsInventoryServiceList {
     return items;
   }
 
-  private toggleStatusFilter(status: ServiceStatus) {
+  private toggleStatusFilter(status: ServiceRequestStatus) {
     this.statusFilters = this.statusFilters.includes(status)
       ? this.statusFilters.filter(s => s !== status)
       : [...this.statusFilters, status];
@@ -158,8 +115,8 @@ export class XdsInventoryServiceList {
     }
   }
 
-  private formatDate(iso: string): string {
-    return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
+  private formatDate(date: Date): string {
+    return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
   render() {
@@ -171,7 +128,7 @@ export class XdsInventoryServiceList {
         <div class="list-header">
           <h2>Service Requests</h2>
           <span class="item-count">
-            {isFiltered ? `${items.length} of ${(this.serviceRequests ?? []).length}` : items.length} requests
+            {isFiltered ? `${items.length} of ${this.serviceRequests.length}` : items.length} requests
           </span>
         </div>
 
@@ -214,11 +171,11 @@ export class XdsInventoryServiceList {
               </div>
               <md-icon slot="start">build</md-icon>
               <div slot="end" class="item-end">
-                <span class={`item-priority item-priority--${PRIORITY_CLASS[item.priority as ServicePriority]}`}>
-                  {PRIORITY_LABEL[item.priority as ServicePriority]}
+                <span class={`item-priority item-priority--${PRIORITY_CLASS[item.priority]}`}>
+                  {PRIORITY_LABEL[item.priority]}
                 </span>
-                <span class={`item-status item-status--${STATUS_CLASS[item.status as ServiceStatus]}`}>
-                  {STATUS_LABEL[item.status as ServiceStatus]}
+                <span class={`item-status item-status--${STATUS_CLASS[item.status]}`}>
+                  {STATUS_LABEL[item.status]}
                 </span>
               </div>
             </md-list-item>

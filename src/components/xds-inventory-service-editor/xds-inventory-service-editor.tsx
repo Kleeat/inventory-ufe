@@ -7,25 +7,37 @@ import '@material/web/button/outlined-button';
 import '@material/web/button/filled-tonal-button';
 import '@material/web/divider/divider';
 import '@material/web/icon/icon';
+import {
+  ServiceRequestsApi, EquipmentApi,
+  ServiceRequest, ServiceRequestCreate, ServiceRequestUpdate,
+  ServiceRequestStatus, Priority, Equipment, Configuration,
+} from '../../api/inventory';
 
-const SERVICE_STATUSES   = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const;
-const SERVICE_PRIORITIES = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as const;
-type ServiceStatus   = typeof SERVICE_STATUSES[number];
-type ServicePriority = typeof SERVICE_PRIORITIES[number];
+const SERVICE_STATUSES: ServiceRequestStatus[] = ['NEW', 'ASSIGNED', 'IN_PROGRESS', 'CLOSED'];
+const SERVICE_PRIORITIES: Priority[] = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
 
-const STATUS_LABEL: Record<ServiceStatus, string> = {
-  'OPEN': 'Open',
+const STATUS_LABEL: Record<ServiceRequestStatus, string> = {
+  'NEW': 'New',
+  'ASSIGNED': 'Assigned',
   'IN_PROGRESS': 'In Progress',
-  'RESOLVED': 'Resolved',
   'CLOSED': 'Closed',
 };
 
-const PRIORITY_LABEL: Record<ServicePriority, string> = {
+const PRIORITY_LABEL: Record<Priority, string> = {
   'LOW': 'Low',
   'MEDIUM': 'Medium',
   'HIGH': 'High',
   'CRITICAL': 'Critical',
 };
+
+interface ServiceFormData {
+  id: string;
+  title: string;
+  description: string;
+  priority: Priority;
+  status: ServiceRequestStatus;
+  equipmentId: string;
+}
 
 @Component({
   tag: 'xds-inventory-service-editor',
@@ -38,14 +50,15 @@ export class XdsInventoryServiceEditor {
 
   @Event({ eventName: 'editor-closed' }) editorClosed!: EventEmitter<string>;
 
-  @State() entry: any;
+  @State() entry!: ServiceFormData;
+  @State() equipment: Equipment[] = [];
   @State() errorMessage: string;
   @State() isValid: boolean;
 
   private formElement!: HTMLFormElement;
 
   async componentWillLoad() {
-    await this.getEntryAsync();
+    await Promise.all([this.getEntryAsync(), this.getEquipment()]);
   }
 
   private async getEntryAsync() {
@@ -53,33 +66,48 @@ export class XdsInventoryServiceEditor {
       this.isValid = false;
       this.entry = {
         id: '@new',
-        equipmentId: '',
         title: '',
         description: '',
         priority: 'MEDIUM',
-        status: 'OPEN',
-        createdAt: new Date().toISOString(),
+        status: 'NEW',
+        equipmentId: '',
       };
       return;
     }
     try {
-      const allRequests = [
-        { id: '7c9e6679-7425-40de-944b-e07fc1f90ae7', equipmentId: 'eq-001', title: 'Porucha displeja – nereaguje na dotyk',    description: 'Displej prestáva reagovať po 30 minútach prevádzky. Potrebná výmena dotykového panela.', priority: 'HIGH',     status: 'IN_PROGRESS', createdAt: '2024-03-15T08:30:00Z' },
-        { id: 'sr-002',                                equipmentId: 'eq-002', title: 'Batéria sa nenabíja',                      description: 'Defibrilátor Zoll X Series sa nedá nabiť. Indikátor nabíjania nesvieti pri pripojení na sieť.', priority: 'CRITICAL', status: 'OPEN',        createdAt: '2024-04-01T14:00:00Z' },
-        { id: 'sr-003',                                equipmentId: 'eq-003', title: 'Pravidelná údržba ventilátora',             description: 'Plánovaná ročná údržba podľa servisného plánu výrobcu Dräger.', priority: 'MEDIUM',   status: 'RESOLVED',    createdAt: '2024-02-10T09:00:00Z' },
-        { id: 'sr-004',                                equipmentId: 'eq-004', title: 'Chybové hlásenie E-04',                    description: 'Infúzna pumpa zobrazuje chybový kód E-04 pri spustení. Pumpa nie je schopná prevádzky.', priority: 'HIGH',     status: 'OPEN',        createdAt: '2024-04-10T11:30:00Z' },
-        { id: 'sr-005',                                equipmentId: 'eq-005', title: 'Kalibrácia SpO2 senzora',                  description: 'Pacientský monitor vykazuje odchýlku ±3% pri meraní saturácie. Potrebná kalibrácia.', priority: 'LOW',      status: 'CLOSED',      createdAt: '2024-01-20T07:00:00Z' },
-        { id: 'sr-006',                                equipmentId: 'eq-001', title: 'Aktualizácia softvéru ultrazvuku',         description: 'Dostupná aktualizácia firmvéru verzie 3.2.1 od výrobcu Philips. Obsahuje bezpečnostné záplaty.', priority: 'MEDIUM',   status: 'OPEN',        createdAt: '2024-04-22T13:15:00Z' },
-      ];
-      const found = allRequests.find(r => r.id === this.entryId);
-      if (found) {
-        this.entry = { ...found };
+      const configuration = new Configuration({ basePath: this.apiBase });
+      const api = new ServiceRequestsApi(configuration);
+      const response = await api.getServiceRequestRaw({ requestId: this.entryId });
+      if (response.raw.status < 299) {
+        const sr: ServiceRequest = await response.value();
+        this.entry = {
+          id: sr.id,
+          title: sr.title,
+          description: sr.description,
+          priority: sr.priority,
+          status: sr.status,
+          equipmentId: sr.equipmentId,
+        };
         this.isValid = true;
       } else {
-        this.errorMessage = `Service request with id "${this.entryId}" not found`;
+        this.errorMessage = `Cannot load service request: ${response.raw.statusText}`;
       }
     } catch (err: any) {
       this.errorMessage = `Cannot load service request: ${err.message || 'unknown'}`;
+    }
+  }
+
+  private async getEquipment() {
+    try {
+      const configuration = new Configuration({ basePath: this.apiBase });
+      const api = new EquipmentApi(configuration);
+      const response = await api.listEquipmentRaw({ pageSize: 1000 });
+      if (response.raw.status < 299) {
+        const page = await response.value();
+        this.equipment = page.content || [];
+      }
+    } catch (err: any) {
+      // non-critical — dropdown falls back to empty
     }
   }
 
@@ -94,13 +122,53 @@ export class XdsInventoryServiceEditor {
       if (el.reportValidity) valid = el.reportValidity() && valid;
     }
     if (!valid) return;
-    // API call goes here
-    this.editorClosed.emit('store');
+
+    try {
+      const configuration = new Configuration({ basePath: this.apiBase });
+      const api = new ServiceRequestsApi(configuration);
+
+      let response: any;
+      if (this.entryId === '@new') {
+        const payload: ServiceRequestCreate = {
+          title: this.entry.title,
+          description: this.entry.description,
+          priority: this.entry.priority,
+          equipmentId: this.entry.equipmentId,
+        };
+        response = await api.createServiceRequestRaw({ serviceRequestCreate: payload });
+      } else {
+        const payload: ServiceRequestUpdate = {
+          title: this.entry.title,
+          description: this.entry.description,
+          priority: this.entry.priority,
+          status: this.entry.status,
+        };
+        response = await api.updateServiceRequestRaw({ requestId: this.entryId, serviceRequestUpdate: payload });
+      }
+
+      if (response.raw.status < 299) {
+        this.editorClosed.emit('store');
+      } else {
+        this.errorMessage = `Cannot save service request: ${response.raw.statusText}`;
+      }
+    } catch (err: any) {
+      this.errorMessage = `Cannot save service request: ${err.message || 'unknown'}`;
+    }
   }
 
   private async deleteEntry() {
-    // API call goes here
-    this.editorClosed.emit('delete');
+    try {
+      const configuration = new Configuration({ basePath: this.apiBase });
+      const api = new ServiceRequestsApi(configuration);
+      const response = await api.deleteServiceRequestRaw({ requestId: this.entryId });
+      if (response.raw.status < 299) {
+        this.editorClosed.emit('delete');
+      } else {
+        this.errorMessage = `Cannot delete service request: ${response.raw.statusText}`;
+      }
+    } catch (err: any) {
+      this.errorMessage = `Cannot delete service request: ${err.message || 'unknown'}`;
+    }
   }
 
   render() {
@@ -122,11 +190,18 @@ export class XdsInventoryServiceEditor {
             <md-icon slot="leading-icon">title</md-icon>
           </md-filled-text-field>
 
-          <md-filled-text-field
-            label="Equipment ID" required value={this.entry.equipmentId}
+          <md-filled-select
+            label="Equipment" required
+            disabled={this.entryId !== '@new'}
+            value={this.entry.equipmentId}
             oninput={(ev: InputEvent) => this.handleInput('equipmentId', (ev.target as HTMLInputElement).value)}>
             <md-icon slot="leading-icon">medical_services</md-icon>
-          </md-filled-text-field>
+            {this.equipment.map(eq => (
+              <md-select-option value={eq.id} selected={eq.id === this.entry.equipmentId}>
+                <div slot="headline">{eq.name} — {eq.inventoryNumber}</div>
+              </md-select-option>
+            ))}
+          </md-filled-select>
 
           <md-filled-text-field
             label="Description" value={this.entry.description}
@@ -149,6 +224,7 @@ export class XdsInventoryServiceEditor {
 
             <md-filled-select
               label="Status"
+              disabled={this.entryId === '@new'}
               value={this.entry.status}
               oninput={(ev: InputEvent) => this.handleInput('status', (ev.target as HTMLInputElement).value)}>
               <md-icon slot="leading-icon">info</md-icon>

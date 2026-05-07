@@ -5,6 +5,16 @@ import '@material/web/button/outlined-button';
 import '@material/web/button/filled-tonal-button';
 import '@material/web/divider/divider';
 import '@material/web/icon/icon';
+import { LocationsApi, Location, LocationCreate, LocationUpdate, Configuration } from '../../api/inventory';
+
+interface LocationFormData {
+  id: string;
+  building: string;
+  floor: string;
+  department: string;
+  room: string;
+  description: string;
+}
 
 @Component({
   tag: 'xds-inventory-location-editor',
@@ -17,7 +27,7 @@ export class XdsInventoryLocationEditor {
 
   @Event({ eventName: 'editor-closed' }) editorClosed!: EventEmitter<string>;
 
-  @State() entry: any;
+  @State() entry: LocationFormData;
   @State() errorMessage: string;
   @State() isValid: boolean;
 
@@ -34,20 +44,22 @@ export class XdsInventoryLocationEditor {
       return;
     }
     try {
-      const allLocations = [
-        { id: 'loc-001', building: 'Pavilón A', floor: '2. poschodie',  department: 'Kardiológia',                          room: 'Miestnosť 204', description: 'Kardiologická ambulancia so zobrazovacou technikou.' },
-        { id: 'loc-002', building: 'Pavilón C', floor: 'Prízemie',       department: 'Urgentná medicína',                    room: 'Trauma bay 1',  description: null },
-        { id: 'loc-003', building: 'Pavilón B', floor: '3. poschodie',  department: 'Jednotka intenzívnej starostlivosti',  room: 'Miestnosť 312', description: 'Jednotka pre kriticky chorých pacientov vyžadujúcich nepretržitý monitoring.' },
-        { id: 'loc-004', building: 'Pavilón D', floor: '1. poschodie',  department: 'Chirurgia',                            room: 'Sklad 110',     description: null },
-        { id: 'loc-005', building: 'Pavilón A', floor: '4. poschodie',  department: 'Neurológia',                           room: 'Miestnosť 401', description: null },
-        { id: 'loc-006', building: 'Pavilón E', floor: 'Suterén',        department: 'Rádiológia',                           room: 'RTG kabína 2',  description: 'Kabína pre RTG vyšetrenia.' },
-      ];
-      const found = allLocations.find(l => l.id === this.entryId);
-      if (found) {
-        this.entry = { ...found };
+      const configuration = new Configuration({ basePath: this.apiBase });
+      const api = new LocationsApi(configuration);
+      const response = await api.getLocationRaw({ locationId: this.entryId });
+      if (response.raw.status < 299) {
+        const location: Location = await response.value();
+        this.entry = {
+          id: location.id,
+          building: location.building,
+          floor: location.floor,
+          department: location.department,
+          room: location.room,
+          description: location.description ?? '',
+        };
         this.isValid = true;
       } else {
-        this.errorMessage = `Location with id "${this.entryId}" not found`;
+        this.errorMessage = `Cannot load location: ${response.raw.statusText}`;
       }
     } catch (err: any) {
       this.errorMessage = `Cannot load location: ${err.message || 'unknown'}`;
@@ -65,13 +77,55 @@ export class XdsInventoryLocationEditor {
       if (el.reportValidity) valid = el.reportValidity() && valid;
     }
     if (!valid) return;
-    // API call goes here
-    this.editorClosed.emit('store');
+
+    try {
+      const configuration = new Configuration({ basePath: this.apiBase });
+      const api = new LocationsApi(configuration);
+
+      let response: any;
+      if (this.entryId === '@new') {
+        const payload: LocationCreate = {
+          building: this.entry.building,
+          floor: this.entry.floor,
+          department: this.entry.department,
+          room: this.entry.room,
+          description: this.entry.description || undefined,
+        };
+        response = await api.createLocationRaw({ locationCreate: payload });
+      } else {
+        const payload: LocationUpdate = {
+          building: this.entry.building,
+          floor: this.entry.floor,
+          department: this.entry.department,
+          room: this.entry.room,
+          description: this.entry.description || undefined,
+        };
+        response = await api.updateLocationRaw({ locationId: this.entryId, locationUpdate: payload });
+      }
+
+      if (response.raw.status < 299) {
+        this.editorClosed.emit('store');
+      } else {
+        this.errorMessage = `Cannot save location: ${response.raw.statusText}`;
+      }
+    } catch (err: any) {
+      this.errorMessage = `Cannot save location: ${err.message || 'unknown'}`;
+    }
   }
 
   private async deleteEntry() {
-    // API call goes here
-    this.editorClosed.emit('delete');
+    try {
+      const configuration = new Configuration({ basePath: this.apiBase });
+      const api = new LocationsApi(configuration);
+      const response = await api.deleteLocationRaw({ locationId: this.entryId });
+      if (response.raw.status < 299) {
+        this.editorClosed.emit('delete');
+      } else {
+        this.errorMessage = `Cannot delete location: ${response.raw.statusText}`;
+      }
+    } catch (err: any) {
+      this.errorMessage = `Cannot delete location: ${err.message || 'unknown'}`;
+    }
   }
 
   render() {
