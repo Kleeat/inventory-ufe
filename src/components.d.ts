@@ -7,6 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface XdsInventoryApp {
+        "apiBase": string | undefined;
         /**
           * @default ''
          */
@@ -17,6 +18,7 @@ export namespace Components {
         "entryId": string;
     }
     interface XdsInventoryEquipmentList {
+        "apiBase": string | undefined;
     }
     interface XdsInventoryLocationEditor {
         "apiBase": string;
@@ -177,6 +179,7 @@ declare global {
 }
 declare namespace LocalJSX {
     interface XdsInventoryApp {
+        "apiBase"?: string | undefined;
         /**
           * @default ''
          */
@@ -188,6 +191,7 @@ declare namespace LocalJSX {
         "onEditor-closed"?: (event: XdsInventoryEquipmentEditorCustomEvent<string>) => void;
     }
     interface XdsInventoryEquipmentList {
+        "apiBase"?: string | undefined;
         "onEntry-clicked"?: (event: XdsInventoryEquipmentListCustomEvent<string>) => void;
     }
     interface XdsInventoryLocationEditor {
@@ -210,10 +214,14 @@ declare namespace LocalJSX {
 
     interface XdsInventoryAppAttributes {
         "basePath": string;
+        "apiBase": string | undefined;
     }
     interface XdsInventoryEquipmentEditorAttributes {
         "entryId": string;
         "apiBase": string;
+    }
+    interface XdsInventoryEquipmentListAttributes {
+        "apiBase": string | undefined;
     }
     interface XdsInventoryLocationEditorAttributes {
         "entryId": string;
@@ -227,7 +235,7 @@ declare namespace LocalJSX {
     interface IntrinsicElements {
         "xds-inventory-app": Omit<XdsInventoryApp, keyof XdsInventoryAppAttributes> & { [K in keyof XdsInventoryApp & keyof XdsInventoryAppAttributes]?: XdsInventoryApp[K] } & { [K in keyof XdsInventoryApp & keyof XdsInventoryAppAttributes as `attr:${K}`]?: XdsInventoryAppAttributes[K] } & { [K in keyof XdsInventoryApp & keyof XdsInventoryAppAttributes as `prop:${K}`]?: XdsInventoryApp[K] };
         "xds-inventory-equipment-editor": Omit<XdsInventoryEquipmentEditor, keyof XdsInventoryEquipmentEditorAttributes> & { [K in keyof XdsInventoryEquipmentEditor & keyof XdsInventoryEquipmentEditorAttributes]?: XdsInventoryEquipmentEditor[K] } & { [K in keyof XdsInventoryEquipmentEditor & keyof XdsInventoryEquipmentEditorAttributes as `attr:${K}`]?: XdsInventoryEquipmentEditorAttributes[K] } & { [K in keyof XdsInventoryEquipmentEditor & keyof XdsInventoryEquipmentEditorAttributes as `prop:${K}`]?: XdsInventoryEquipmentEditor[K] };
-        "xds-inventory-equipment-list": XdsInventoryEquipmentList;
+        "xds-inventory-equipment-list": Omit<XdsInventoryEquipmentList, keyof XdsInventoryEquipmentListAttributes> & { [K in keyof XdsInventoryEquipmentList & keyof XdsInventoryEquipmentListAttributes]?: XdsInventoryEquipmentList[K] } & { [K in keyof XdsInventoryEquipmentList & keyof XdsInventoryEquipmentListAttributes as `attr:${K}`]?: XdsInventoryEquipmentListAttributes[K] } & { [K in keyof XdsInventoryEquipmentList & keyof XdsInventoryEquipmentListAttributes as `prop:${K}`]?: XdsInventoryEquipmentList[K] };
         "xds-inventory-location-editor": Omit<XdsInventoryLocationEditor, keyof XdsInventoryLocationEditorAttributes> & { [K in keyof XdsInventoryLocationEditor & keyof XdsInventoryLocationEditorAttributes]?: XdsInventoryLocationEditor[K] } & { [K in keyof XdsInventoryLocationEditor & keyof XdsInventoryLocationEditorAttributes as `attr:${K}`]?: XdsInventoryLocationEditorAttributes[K] } & { [K in keyof XdsInventoryLocationEditor & keyof XdsInventoryLocationEditorAttributes as `prop:${K}`]?: XdsInventoryLocationEditor[K] };
         "xds-inventory-location-list": XdsInventoryLocationList;
         "xds-inventory-service-editor": Omit<XdsInventoryServiceEditor, keyof XdsInventoryServiceEditorAttributes> & { [K in keyof XdsInventoryServiceEditor & keyof XdsInventoryServiceEditorAttributes]?: XdsInventoryServiceEditor[K] } & { [K in keyof XdsInventoryServiceEditor & keyof XdsInventoryServiceEditorAttributes as `attr:${K}`]?: XdsInventoryServiceEditorAttributes[K] } & { [K in keyof XdsInventoryServiceEditor & keyof XdsInventoryServiceEditorAttributes as `prop:${K}`]?: XdsInventoryServiceEditor[K] };

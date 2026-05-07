@@ -12,6 +12,7 @@ declare global {
 export class XdsInventoryApp {
   @State() private relativePath = '';
   @Prop() basePath: string = '';
+  @Prop() apiBase: string | undefined;
 
   componentWillLoad() {
     const baseUri = new URL(this.basePath, document.baseURI || '/').pathname;
@@ -108,6 +109,7 @@ export class XdsInventoryApp {
         <div class="tab-content">
           {activeTab === 'equipment' && (
             <xds-inventory-equipment-list
+              api-base={this.apiBase}
               onentry-clicked={(ev: CustomEvent<string>) => navigate('./equipment/edit/' + ev.detail)}
             ></xds-inventory-equipment-list>
           )}
