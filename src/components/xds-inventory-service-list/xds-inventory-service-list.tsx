@@ -1,4 +1,4 @@
-import { Component, Host, h, State } from '@stencil/core';
+import { Component, Host, h, State, Event, EventEmitter } from '@stencil/core';
 import '@material/web/list/list';
 import '@material/web/list/list-item';
 import '@material/web/icon/icon';
@@ -8,6 +8,20 @@ type ServicePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 type SortField = 'priority' | 'createdAt';
 
 const SERVICE_STATUSES: ServiceStatus[] = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
+
+const STATUS_LABEL: Record<ServiceStatus, string> = {
+  'OPEN': 'Open',
+  'IN_PROGRESS': 'In Progress',
+  'RESOLVED': 'Resolved',
+  'CLOSED': 'Closed',
+};
+
+const PRIORITY_LABEL: Record<ServicePriority, string> = {
+  'LOW': 'Low',
+  'MEDIUM': 'Medium',
+  'HIGH': 'High',
+  'CRITICAL': 'Critical',
+};
 
 const STATUS_CLASS: Record<ServiceStatus, string> = {
   'OPEN': 'open',
@@ -37,6 +51,8 @@ const PRIORITY_ORDER: Record<ServicePriority, number> = {
 })
 export class XdsInventoryServiceList {
   serviceRequests: any[] = [];
+
+  @Event({ eventName: 'entry-clicked' }) entryClicked!: EventEmitter<string>;
 
   @State() statusFilters: ServiceStatus[] = [];
   @State() sortBy: SortField | null = null;
@@ -166,7 +182,7 @@ export class XdsInventoryServiceList {
               {SERVICE_STATUSES.map(status => (
                 <span class={`status-chip-wrap status-chip-wrap--${STATUS_CLASS[status]}`}>
                   <md-filter-chip key={status} selected={this.statusFilters.includes(status)} onClick={() => this.toggleStatusFilter(status)}>
-                    {status}
+                    {STATUS_LABEL[status]}
                   </md-filter-chip>
                 </span>
               ))}
@@ -190,7 +206,7 @@ export class XdsInventoryServiceList {
 
         <md-list>
           {items.map(item => (
-            <md-list-item key={item.id}>
+            <md-list-item key={item.id} type="button" onClick={() => this.entryClicked.emit(item.id)}>
               <div slot="headline">{item.title}</div>
               <div slot="supporting-text">
                 <div>{item.description}</div>
@@ -199,10 +215,10 @@ export class XdsInventoryServiceList {
               <md-icon slot="start">build</md-icon>
               <div slot="end" class="item-end">
                 <span class={`item-priority item-priority--${PRIORITY_CLASS[item.priority as ServicePriority]}`}>
-                  {item.priority}
+                  {PRIORITY_LABEL[item.priority as ServicePriority]}
                 </span>
                 <span class={`item-status item-status--${STATUS_CLASS[item.status as ServiceStatus]}`}>
-                  {item.status}
+                  {STATUS_LABEL[item.status as ServiceStatus]}
                 </span>
               </div>
             </md-list-item>

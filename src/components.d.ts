@@ -7,13 +7,53 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface XdsInventoryApp {
+        /**
+          * @default ''
+         */
+        "basePath": string;
+    }
+    interface XdsInventoryEquipmentEditor {
+        "apiBase": string;
+        "entryId": string;
     }
     interface XdsInventoryEquipmentList {
     }
+    interface XdsInventoryLocationEditor {
+        "apiBase": string;
+        "entryId": string;
+    }
     interface XdsInventoryLocationList {
+    }
+    interface XdsInventoryServiceEditor {
+        "apiBase": string;
+        "entryId": string;
     }
     interface XdsInventoryServiceList {
     }
+}
+export interface XdsInventoryEquipmentEditorCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLXdsInventoryEquipmentEditorElement;
+}
+export interface XdsInventoryEquipmentListCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLXdsInventoryEquipmentListElement;
+}
+export interface XdsInventoryLocationEditorCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLXdsInventoryLocationEditorElement;
+}
+export interface XdsInventoryLocationListCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLXdsInventoryLocationListElement;
+}
+export interface XdsInventoryServiceEditorCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLXdsInventoryServiceEditorElement;
+}
+export interface XdsInventoryServiceListCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLXdsInventoryServiceListElement;
 }
 declare global {
     interface HTMLXdsInventoryAppElement extends Components.XdsInventoryApp, HTMLStencilElement {
@@ -22,19 +62,104 @@ declare global {
         prototype: HTMLXdsInventoryAppElement;
         new (): HTMLXdsInventoryAppElement;
     };
+    interface HTMLXdsInventoryEquipmentEditorElementEventMap {
+        "editor-closed": string;
+    }
+    interface HTMLXdsInventoryEquipmentEditorElement extends Components.XdsInventoryEquipmentEditor, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLXdsInventoryEquipmentEditorElementEventMap>(type: K, listener: (this: HTMLXdsInventoryEquipmentEditorElement, ev: XdsInventoryEquipmentEditorCustomEvent<HTMLXdsInventoryEquipmentEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLXdsInventoryEquipmentEditorElementEventMap>(type: K, listener: (this: HTMLXdsInventoryEquipmentEditorElement, ev: XdsInventoryEquipmentEditorCustomEvent<HTMLXdsInventoryEquipmentEditorElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLXdsInventoryEquipmentEditorElement: {
+        prototype: HTMLXdsInventoryEquipmentEditorElement;
+        new (): HTMLXdsInventoryEquipmentEditorElement;
+    };
+    interface HTMLXdsInventoryEquipmentListElementEventMap {
+        "entry-clicked": string;
+    }
     interface HTMLXdsInventoryEquipmentListElement extends Components.XdsInventoryEquipmentList, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLXdsInventoryEquipmentListElementEventMap>(type: K, listener: (this: HTMLXdsInventoryEquipmentListElement, ev: XdsInventoryEquipmentListCustomEvent<HTMLXdsInventoryEquipmentListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLXdsInventoryEquipmentListElementEventMap>(type: K, listener: (this: HTMLXdsInventoryEquipmentListElement, ev: XdsInventoryEquipmentListCustomEvent<HTMLXdsInventoryEquipmentListElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLXdsInventoryEquipmentListElement: {
         prototype: HTMLXdsInventoryEquipmentListElement;
         new (): HTMLXdsInventoryEquipmentListElement;
     };
+    interface HTMLXdsInventoryLocationEditorElementEventMap {
+        "editor-closed": string;
+    }
+    interface HTMLXdsInventoryLocationEditorElement extends Components.XdsInventoryLocationEditor, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLXdsInventoryLocationEditorElementEventMap>(type: K, listener: (this: HTMLXdsInventoryLocationEditorElement, ev: XdsInventoryLocationEditorCustomEvent<HTMLXdsInventoryLocationEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLXdsInventoryLocationEditorElementEventMap>(type: K, listener: (this: HTMLXdsInventoryLocationEditorElement, ev: XdsInventoryLocationEditorCustomEvent<HTMLXdsInventoryLocationEditorElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLXdsInventoryLocationEditorElement: {
+        prototype: HTMLXdsInventoryLocationEditorElement;
+        new (): HTMLXdsInventoryLocationEditorElement;
+    };
+    interface HTMLXdsInventoryLocationListElementEventMap {
+        "entry-clicked": string;
+        "equipment-clicked": string;
+    }
     interface HTMLXdsInventoryLocationListElement extends Components.XdsInventoryLocationList, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLXdsInventoryLocationListElementEventMap>(type: K, listener: (this: HTMLXdsInventoryLocationListElement, ev: XdsInventoryLocationListCustomEvent<HTMLXdsInventoryLocationListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLXdsInventoryLocationListElementEventMap>(type: K, listener: (this: HTMLXdsInventoryLocationListElement, ev: XdsInventoryLocationListCustomEvent<HTMLXdsInventoryLocationListElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLXdsInventoryLocationListElement: {
         prototype: HTMLXdsInventoryLocationListElement;
         new (): HTMLXdsInventoryLocationListElement;
     };
+    interface HTMLXdsInventoryServiceEditorElementEventMap {
+        "editor-closed": string;
+    }
+    interface HTMLXdsInventoryServiceEditorElement extends Components.XdsInventoryServiceEditor, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLXdsInventoryServiceEditorElementEventMap>(type: K, listener: (this: HTMLXdsInventoryServiceEditorElement, ev: XdsInventoryServiceEditorCustomEvent<HTMLXdsInventoryServiceEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLXdsInventoryServiceEditorElementEventMap>(type: K, listener: (this: HTMLXdsInventoryServiceEditorElement, ev: XdsInventoryServiceEditorCustomEvent<HTMLXdsInventoryServiceEditorElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLXdsInventoryServiceEditorElement: {
+        prototype: HTMLXdsInventoryServiceEditorElement;
+        new (): HTMLXdsInventoryServiceEditorElement;
+    };
+    interface HTMLXdsInventoryServiceListElementEventMap {
+        "entry-clicked": string;
+    }
     interface HTMLXdsInventoryServiceListElement extends Components.XdsInventoryServiceList, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLXdsInventoryServiceListElementEventMap>(type: K, listener: (this: HTMLXdsInventoryServiceListElement, ev: XdsInventoryServiceListCustomEvent<HTMLXdsInventoryServiceListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLXdsInventoryServiceListElementEventMap>(type: K, listener: (this: HTMLXdsInventoryServiceListElement, ev: XdsInventoryServiceListCustomEvent<HTMLXdsInventoryServiceListElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLXdsInventoryServiceListElement: {
         prototype: HTMLXdsInventoryServiceListElement;
@@ -42,24 +167,70 @@ declare global {
     };
     interface HTMLElementTagNameMap {
         "xds-inventory-app": HTMLXdsInventoryAppElement;
+        "xds-inventory-equipment-editor": HTMLXdsInventoryEquipmentEditorElement;
         "xds-inventory-equipment-list": HTMLXdsInventoryEquipmentListElement;
+        "xds-inventory-location-editor": HTMLXdsInventoryLocationEditorElement;
         "xds-inventory-location-list": HTMLXdsInventoryLocationListElement;
+        "xds-inventory-service-editor": HTMLXdsInventoryServiceEditorElement;
         "xds-inventory-service-list": HTMLXdsInventoryServiceListElement;
     }
 }
 declare namespace LocalJSX {
     interface XdsInventoryApp {
+        /**
+          * @default ''
+         */
+        "basePath"?: string;
+    }
+    interface XdsInventoryEquipmentEditor {
+        "apiBase"?: string;
+        "entryId"?: string;
+        "onEditor-closed"?: (event: XdsInventoryEquipmentEditorCustomEvent<string>) => void;
     }
     interface XdsInventoryEquipmentList {
+        "onEntry-clicked"?: (event: XdsInventoryEquipmentListCustomEvent<string>) => void;
+    }
+    interface XdsInventoryLocationEditor {
+        "apiBase"?: string;
+        "entryId"?: string;
+        "onEditor-closed"?: (event: XdsInventoryLocationEditorCustomEvent<string>) => void;
     }
     interface XdsInventoryLocationList {
+        "onEntry-clicked"?: (event: XdsInventoryLocationListCustomEvent<string>) => void;
+        "onEquipment-clicked"?: (event: XdsInventoryLocationListCustomEvent<string>) => void;
+    }
+    interface XdsInventoryServiceEditor {
+        "apiBase"?: string;
+        "entryId"?: string;
+        "onEditor-closed"?: (event: XdsInventoryServiceEditorCustomEvent<string>) => void;
     }
     interface XdsInventoryServiceList {
+        "onEntry-clicked"?: (event: XdsInventoryServiceListCustomEvent<string>) => void;
     }
+
+    interface XdsInventoryAppAttributes {
+        "basePath": string;
+    }
+    interface XdsInventoryEquipmentEditorAttributes {
+        "entryId": string;
+        "apiBase": string;
+    }
+    interface XdsInventoryLocationEditorAttributes {
+        "entryId": string;
+        "apiBase": string;
+    }
+    interface XdsInventoryServiceEditorAttributes {
+        "entryId": string;
+        "apiBase": string;
+    }
+
     interface IntrinsicElements {
-        "xds-inventory-app": XdsInventoryApp;
+        "xds-inventory-app": Omit<XdsInventoryApp, keyof XdsInventoryAppAttributes> & { [K in keyof XdsInventoryApp & keyof XdsInventoryAppAttributes]?: XdsInventoryApp[K] } & { [K in keyof XdsInventoryApp & keyof XdsInventoryAppAttributes as `attr:${K}`]?: XdsInventoryAppAttributes[K] } & { [K in keyof XdsInventoryApp & keyof XdsInventoryAppAttributes as `prop:${K}`]?: XdsInventoryApp[K] };
+        "xds-inventory-equipment-editor": Omit<XdsInventoryEquipmentEditor, keyof XdsInventoryEquipmentEditorAttributes> & { [K in keyof XdsInventoryEquipmentEditor & keyof XdsInventoryEquipmentEditorAttributes]?: XdsInventoryEquipmentEditor[K] } & { [K in keyof XdsInventoryEquipmentEditor & keyof XdsInventoryEquipmentEditorAttributes as `attr:${K}`]?: XdsInventoryEquipmentEditorAttributes[K] } & { [K in keyof XdsInventoryEquipmentEditor & keyof XdsInventoryEquipmentEditorAttributes as `prop:${K}`]?: XdsInventoryEquipmentEditor[K] };
         "xds-inventory-equipment-list": XdsInventoryEquipmentList;
+        "xds-inventory-location-editor": Omit<XdsInventoryLocationEditor, keyof XdsInventoryLocationEditorAttributes> & { [K in keyof XdsInventoryLocationEditor & keyof XdsInventoryLocationEditorAttributes]?: XdsInventoryLocationEditor[K] } & { [K in keyof XdsInventoryLocationEditor & keyof XdsInventoryLocationEditorAttributes as `attr:${K}`]?: XdsInventoryLocationEditorAttributes[K] } & { [K in keyof XdsInventoryLocationEditor & keyof XdsInventoryLocationEditorAttributes as `prop:${K}`]?: XdsInventoryLocationEditor[K] };
         "xds-inventory-location-list": XdsInventoryLocationList;
+        "xds-inventory-service-editor": Omit<XdsInventoryServiceEditor, keyof XdsInventoryServiceEditorAttributes> & { [K in keyof XdsInventoryServiceEditor & keyof XdsInventoryServiceEditorAttributes]?: XdsInventoryServiceEditor[K] } & { [K in keyof XdsInventoryServiceEditor & keyof XdsInventoryServiceEditorAttributes as `attr:${K}`]?: XdsInventoryServiceEditorAttributes[K] } & { [K in keyof XdsInventoryServiceEditor & keyof XdsInventoryServiceEditorAttributes as `prop:${K}`]?: XdsInventoryServiceEditor[K] };
         "xds-inventory-service-list": XdsInventoryServiceList;
     }
 }
@@ -68,8 +239,11 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "xds-inventory-app": LocalJSX.IntrinsicElements["xds-inventory-app"] & JSXBase.HTMLAttributes<HTMLXdsInventoryAppElement>;
+            "xds-inventory-equipment-editor": LocalJSX.IntrinsicElements["xds-inventory-equipment-editor"] & JSXBase.HTMLAttributes<HTMLXdsInventoryEquipmentEditorElement>;
             "xds-inventory-equipment-list": LocalJSX.IntrinsicElements["xds-inventory-equipment-list"] & JSXBase.HTMLAttributes<HTMLXdsInventoryEquipmentListElement>;
+            "xds-inventory-location-editor": LocalJSX.IntrinsicElements["xds-inventory-location-editor"] & JSXBase.HTMLAttributes<HTMLXdsInventoryLocationEditorElement>;
             "xds-inventory-location-list": LocalJSX.IntrinsicElements["xds-inventory-location-list"] & JSXBase.HTMLAttributes<HTMLXdsInventoryLocationListElement>;
+            "xds-inventory-service-editor": LocalJSX.IntrinsicElements["xds-inventory-service-editor"] & JSXBase.HTMLAttributes<HTMLXdsInventoryServiceEditorElement>;
             "xds-inventory-service-list": LocalJSX.IntrinsicElements["xds-inventory-service-list"] & JSXBase.HTMLAttributes<HTMLXdsInventoryServiceListElement>;
         }
     }

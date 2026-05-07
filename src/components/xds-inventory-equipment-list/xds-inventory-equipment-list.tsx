@@ -1,4 +1,4 @@
-import { Component, Host, h, State } from '@stencil/core';
+import { Component, Host, h, State, Event, EventEmitter } from '@stencil/core';
 import '@material/web/list/list';
 import '@material/web/list/list-item';
 import '@material/web/icon/icon';
@@ -7,6 +7,13 @@ type EquipmentStatus = 'ACTIVE' | 'INACTIVE' | 'UNDER_MAINTENANCE' | 'DECOMMISSI
 type SortField = 'status' | 'warrantyExpiry';
 
 const EQUIPMENT_STATUSES: EquipmentStatus[] = ['ACTIVE', 'INACTIVE', 'UNDER_MAINTENANCE', 'DECOMMISSIONED'];
+
+const STATUS_LABEL: Record<EquipmentStatus, string> = {
+  'ACTIVE': 'Active',
+  'INACTIVE': 'Inactive',
+  'UNDER_MAINTENANCE': 'Under Maintenance',
+  'DECOMMISSIONED': 'Decommissioned',
+};
 
 const STATUS_CLASS: Record<EquipmentStatus, string> = {
   'ACTIVE': 'active',
@@ -31,7 +38,10 @@ const STATUS_ORDER: Record<EquipmentStatus, number> = {
 export class XdsInventoryEquipmentList {
   equipmentList: any[] = [];
 
+  @Event({ eventName: 'entry-clicked' }) entryClicked!: EventEmitter<string>;
+
   @State() statusFilters: EquipmentStatus[] = [];
+  @State() copiedId: string | null = null;
   @State() sortBy: SortField | null = null;
   @State() sortAsc: boolean = true;
 
@@ -147,6 +157,13 @@ export class XdsInventoryEquipmentList {
     }
   }
 
+  private copyId(ev: Event, id: string) {
+    ev.stopPropagation();
+    navigator.clipboard.writeText(id);
+    this.copiedId = id;
+    setTimeout(() => { this.copiedId = null; }, 1500);
+  }
+
   private formatDate(iso: string): string {
     return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
   }
@@ -172,7 +189,7 @@ export class XdsInventoryEquipmentList {
               {EQUIPMENT_STATUSES.map(status => (
                 <span class={`status-chip-wrap status-chip-wrap--${STATUS_CLASS[status]}`}>
                   <md-filter-chip key={status} selected={this.statusFilters.includes(status)} onClick={() => this.toggleStatusFilter(status)}>
-                    {status}
+                    {STATUS_LABEL[status]}
                   </md-filter-chip>
                 </span>
               ))}
@@ -196,9 +213,13 @@ export class XdsInventoryEquipmentList {
 
         <md-list>
           {items.map(item => (
-            <md-list-item key={item.id}>
+            <md-list-item key={item.id} type="button" onClick={() => this.entryClicked.emit(item.id)}>
               <div slot="headline">{item.name}</div>
               <div slot="supporting-text">
+                <button class="id-btn" onClick={(ev: Event) => this.copyId(ev, item.id)}>
+                  <md-icon>{this.copiedId === item.id ? 'check' : 'content_copy'}</md-icon>
+                  {item.id}
+                </button>
                 <div>{item.inventoryNumber + ' · ' + item.type + ' · Warranty: ' + this.formatDate(item.warrantyExpiry)}</div>
                 <div>
                   <strong class="item-dept">{item.location?.department}</strong>
@@ -215,7 +236,7 @@ export class XdsInventoryEquipmentList {
                   </span>
                 )}
                 <span class={`item-status item-status--${STATUS_CLASS[item.status as EquipmentStatus]}`}>
-                  {item.status}
+                  {STATUS_LABEL[item.status as EquipmentStatus]}
                 </span>
               </div>
             </md-list-item>

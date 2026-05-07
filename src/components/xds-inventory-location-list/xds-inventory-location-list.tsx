@@ -1,4 +1,4 @@
-import { Component, Host, h } from '@stencil/core';
+import { Component, Host, h, State, Event, EventEmitter } from '@stencil/core';
 import '@material/web/icon/icon';
 
 type EquipmentStatus = 'ACTIVE' | 'INACTIVE' | 'UNDER_MAINTENANCE' | 'DECOMMISSIONED';
@@ -18,6 +18,18 @@ const STATUS_CLASS: Record<EquipmentStatus, string> = {
 export class XdsInventoryLocationList {
   locationList: any[] = [];
   equipmentByLocation: Record<string, any[]> = {};
+
+  @Event({ eventName: 'entry-clicked' }) entryClicked!: EventEmitter<string>;
+  @Event({ eventName: 'equipment-clicked' }) equipmentClicked!: EventEmitter<string>;
+
+  @State() copiedId: string | null = null;
+
+  private copyId(ev: Event, id: string) {
+    ev.stopPropagation();
+    navigator.clipboard.writeText(id);
+    this.copiedId = id;
+    setTimeout(() => { this.copiedId = null; }, 1500);
+  }
 
   async componentWillLoad() {
     this.locationList = await this.getLocationsAsync();
@@ -126,7 +138,7 @@ export class XdsInventoryLocationList {
             const items = this.equipmentByLocation[loc.id] ?? [];
             return (
               <div class="location-card" key={loc.id}>
-                <div class="card-header">
+                <div class="card-header" onClick={() => this.entryClicked.emit(loc.id)}>
                   <div class="card-header-top">
                     <div class="card-icon">
                       <md-icon>location_on</md-icon>
@@ -134,6 +146,10 @@ export class XdsInventoryLocationList {
                     <div class="card-title-block">
                       <span class="card-name">{loc.room}</span>
                       <span class="card-breadcrumb">{loc.department} · {loc.building} · {loc.floor}</span>
+                      <button class="id-btn" onClick={(ev: Event) => this.copyId(ev, loc.id)}>
+                        <md-icon>{this.copiedId === loc.id ? 'check' : 'content_copy'}</md-icon>
+                        {loc.id}
+                      </button>
                     </div>
                     <span class="card-count">{items.length}</span>
                   </div>
@@ -145,7 +161,7 @@ export class XdsInventoryLocationList {
                   : (
                     <ul class="equipment-rows">
                       {items.map(eq => (
-                        <li class="equipment-row" key={eq.id}>
+                        <li class="equipment-row" key={eq.id} onClick={(e) => { e.stopPropagation(); this.equipmentClicked.emit(eq.id); }}>
                           <md-icon class="eq-icon">medical_services</md-icon>
                           <div class="eq-info">
                             <span class="eq-name">{eq.name}</span>

@@ -235,3 +235,30 @@ md-list-item {
   opacity: 0.6;
   margin-top: 2px;
 }
+
+/* ── ID copy button ── */
+
+.id-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: monospace;
+  font-size: 0.7rem;
+  color: inherit;
+  opacity: 0.45;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.id-btn:hover {
+  opacity: 0.9;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.id-btn md-icon {
+  --md-icon-size: 13px;
+}
