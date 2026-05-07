@@ -1,8 +1,5 @@
 import { Component, Host, h, Prop, State } from '@stencil/core';
 
-const TAB_PATHS = ['equipment', 'locations', 'services'] as const;
-type TabPath = typeof TAB_PATHS[number];
-
 declare global {
   interface Window { navigation: any; }
 }
@@ -16,16 +13,17 @@ export class XdsInventoryApp {
   @State() private relativePath = '';
   @Prop() basePath: string = '';
 
-  private baseUri = '/';
-
   componentWillLoad() {
-    const base = this.basePath || '/';
-    let uri = new URL(base, document.baseURI).pathname;
-    if (!uri.endsWith('/')) uri += '/';
-    this.baseUri = uri;
+    const baseUri = new URL(this.basePath, document.baseURI || '/').pathname;
+    console.log('Base URI:', baseUri);
+    console.log("Document base URI:", document.baseURI);
 
     const toRelative = (path: string) => {
-      this.relativePath = path.startsWith(this.baseUri) ? path.slice(this.baseUri.length) : '';
+      if (path.startsWith(baseUri)) {
+        this.relativePath = path.slice(baseUri.length);
+      } else {
+        this.relativePath = '';
+      }
     };
 
     window.navigation?.addEventListener('navigate', (ev: Event) => {
@@ -38,39 +36,49 @@ export class XdsInventoryApp {
 
   render() {
     const navigate = (path: string) => {
-      window.navigation.navigate(this.baseUri + path);
+      const absolute = new URL(path, new URL(this.basePath, document.baseURI)).pathname;
+      window.navigation.navigate(absolute);
     };
 
-    const parts = this.relativePath.split('/');
-    const tab = parts[0] as TabPath;
-    const isEditor = parts[1] === 'edit';
-    const entryId = isEditor ? (parts[2] ?? '@new') : null;
-    const tabIndex = Math.max(0, TAB_PATHS.indexOf(tab));
-
-    if (isEditor) {
+    if (this.relativePath.startsWith('equipment/edit/')) {
+      const entryId = this.relativePath.split('/')[2] || '@new';
       return (
         <Host>
-          {tab === 'equipment' && (
-            <xds-inventory-equipment-editor
-              entry-id={entryId}
-              oneditor-closed={() => navigate('equipment')}
-            ></xds-inventory-equipment-editor>
-          )}
-          {tab === 'locations' && (
-            <xds-inventory-location-editor
-              entry-id={entryId}
-              oneditor-closed={() => navigate('locations')}
-            ></xds-inventory-location-editor>
-          )}
-          {tab === 'services' && (
-            <xds-inventory-service-editor
-              entry-id={entryId}
-              oneditor-closed={() => navigate('services')}
-            ></xds-inventory-service-editor>
-          )}
+          <xds-inventory-equipment-editor
+            entry-id={entryId}
+            oneditor-closed={() => navigate('./equipment')}
+          ></xds-inventory-equipment-editor>
         </Host>
       );
     }
+
+    if (this.relativePath.startsWith('locations/edit/')) {
+      const entryId = this.relativePath.split('/')[2] || '@new';
+      return (
+        <Host>
+          <xds-inventory-location-editor
+            entry-id={entryId}
+            oneditor-closed={() => navigate('./locations')}
+          ></xds-inventory-location-editor>
+        </Host>
+      );
+    }
+
+    if (this.relativePath.startsWith('services/edit/')) {
+      const entryId = this.relativePath.split('/')[2] || '@new';
+      return (
+        <Host>
+          <xds-inventory-service-editor
+            entry-id={entryId}
+            oneditor-closed={() => navigate('./services')}
+          ></xds-inventory-service-editor>
+        </Host>
+      );
+    }
+
+    const activeTab = this.relativePath.startsWith('locations') ? 'locations'
+      : this.relativePath.startsWith('services') ? 'services'
+      : 'equipment';
 
     return (
       <Host>
@@ -79,37 +87,39 @@ export class XdsInventoryApp {
         </header>
         <md-tabs
           class="app-tabs"
-          activeTabIndex={tabIndex}
-          onChange={(e: Event) => navigate(TAB_PATHS[(e.target as any).activeTabIndex])}
+          onchange={(ev: CustomEvent) => {
+            const idx = (ev.target as any).activeTabIndex;
+            navigate(idx === 1 ? './locations' : idx === 2 ? './services' : './equipment');
+          }}
         >
-          <md-primary-tab>
+          <md-primary-tab active={activeTab === 'equipment'}>
             <md-icon slot="icon">medical_services</md-icon>
             Equipment
           </md-primary-tab>
-          <md-primary-tab>
+          <md-primary-tab active={activeTab === 'locations'}>
             <md-icon slot="icon">location_on</md-icon>
             Locations
           </md-primary-tab>
-          <md-primary-tab>
+          <md-primary-tab active={activeTab === 'services'}>
             <md-icon slot="icon">build</md-icon>
             Services
           </md-primary-tab>
         </md-tabs>
         <div class="tab-content">
-          {tabIndex === 0 && (
+          {activeTab === 'equipment' && (
             <xds-inventory-equipment-list
-              onentry-clicked={(ev: CustomEvent<string>) => navigate('equipment/edit/' + ev.detail)}
+              onentry-clicked={(ev: CustomEvent<string>) => navigate('./equipment/edit/' + ev.detail)}
             ></xds-inventory-equipment-list>
           )}
-          {tabIndex === 1 && (
+          {activeTab === 'locations' && (
             <xds-inventory-location-list
-              onentry-clicked={(ev: CustomEvent<string>) => navigate('locations/edit/' + ev.detail)}
-              onequipment-clicked={(ev: CustomEvent<string>) => navigate('equipment/edit/' + ev.detail)}
+              onentry-clicked={(ev: CustomEvent<string>) => navigate('./locations/edit/' + ev.detail)}
+              onequipment-clicked={(ev: CustomEvent<string>) => navigate('./equipment/edit/' + ev.detail)}
             ></xds-inventory-location-list>
           )}
-          {tabIndex === 2 && (
+          {activeTab === 'services' && (
             <xds-inventory-service-list
-              onentry-clicked={(ev: CustomEvent<string>) => navigate('services/edit/' + ev.detail)}
+              onentry-clicked={(ev: CustomEvent<string>) => navigate('./services/edit/' + ev.detail)}
             ></xds-inventory-service-list>
           )}
         </div>

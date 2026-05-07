@@ -159,12 +159,6 @@ export class XdsInventoryServiceEditor {
               ))}
             </md-filled-select>
           </div>
-
-          <md-filled-text-field
-            label="Created" disabled
-            value={new Date(this.entry.createdAt).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}>
-            <md-icon slot="leading-icon">calendar_today</md-icon>
-          </md-filled-text-field>
         </form>
 
         <md-divider></md-divider>
